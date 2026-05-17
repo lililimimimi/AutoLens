@@ -1,0 +1,116 @@
+// AutoLens — components/compare/PriceRangeChart.tsx
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Label,
+} from "recharts";
+import type { CompareVehicle } from "./VehicleSelector";
+
+const COLORS = ["#3d5a3d", "#5a7a5a", "#8aaa7a", "#b8d4a8"];
+
+interface PriceRangeChartProps {
+  vehicles: CompareVehicle[];
+}
+
+const CustomDot = (props: any) => {
+  const { cx, cy, fill, payload } = props;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={20} fill={fill} fillOpacity={0.85} />
+      <text
+        x={cx}
+        y={cy - 26}
+        textAnchor="middle"
+        fontSize={11}
+        fill="#2d2d2d"
+        fontWeight={600}
+      >
+        {payload.brand} {payload.model}
+      </text>
+    </g>
+  );
+};
+
+export default function PriceRangeChart({ vehicles }: PriceRangeChartProps) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 12, padding: "20px 24px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+        <div style={{ fontSize: 16, fontWeight: 600 }}>价格 - 续航对比</div>
+        <div style={{ fontSize: 12, color: "#999" }}>
+          气泡大小·电池容量（kWh）
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <ScatterChart margin={{ top: 20, right: 20, left: -10, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+          <XAxis
+            dataKey="price_min"
+            type="number"
+            name="起售价"
+            unit="万"
+            tick={{ fontSize: 12 }}
+          >
+            <Label
+              value="起售价（万元）"
+              offset={-10}
+              position="insideBottom"
+              style={{ fontSize: 12, fill: "#999" }}
+            />
+          </XAxis>
+          <YAxis
+            dataKey="range_km"
+            type="number"
+            name="续航"
+            unit="km"
+            tick={{ fontSize: 12 }}
+          />
+          <Tooltip
+            cursor={{ strokeDasharray: "3 3" }}
+            content={({ payload }) => {
+              if (!payload?.length) return null;
+              const d = payload[0].payload;
+              return (
+                <div
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e0e0d8",
+                    borderRadius: 8,
+                    padding: "10px 14px",
+                    fontSize: 13,
+                  }}
+                >
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                    {d.brand} {d.model}
+                  </div>
+                  <div>起售价：{d.price_min} 万</div>
+                  <div>续航：{d.range_km} km</div>
+                  <div>综合评分：{d.score} 分</div>
+                </div>
+              );
+            }}
+          />
+          {vehicles.map((v, i) => (
+            <Scatter
+              key={v.id}
+              data={[v]}
+              fill={COLORS[i % COLORS.length]}
+              shape={<CustomDot />}
+            />
+          ))}
+        </ScatterChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
