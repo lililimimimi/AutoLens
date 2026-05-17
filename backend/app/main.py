@@ -1,8 +1,9 @@
 
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from typing import Optional
+from pydantic import BaseModel
 
 from app.config import settings
 from app.database import (
@@ -151,19 +152,49 @@ def dashboard():
 
 
 # ─────────────────────────────────────────
-# 推荐 / 客服
+# 推荐 / 客服（占位，后续 Agent 接入）
 # ─────────────────────────────────────────
 
-@app.post("/api/recommend", tags=["推荐"])
-def recommend(body: dict):
-    # TODO: 接入推荐 Agent 链
-    return {"message": "推荐接口开发中"}
+class RecommendRequestBody(BaseModel):
+    profile: dict
+    top_n: int = 3
+    enable_deep_search: bool = False
+    customer_id: Optional[int] = None
 
+@app.post("/api/recommend", tags=["推荐"])
+async def recommend(body: RecommendRequestBody):
+    from app.agents.recommend.orchestrator import run_recommend_pipeline
+    try:
+        result = await run_recommend_pipeline(
+            profile=body.profile,
+            top_n=body.top_n,
+            enable_deep_search=body.enable_deep_search,
+            customer_id=body.customer_id,
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class ChatRequestBody(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+    customer_id: Optional[int] = None
+    enable_web_search: bool = True
 
 @app.post("/api/chat", tags=["客服"])
-def chat(body: dict):
-    # TODO: 接入客服 Agent 链
-    return {"message": "客服接口开发中"}
+async def chat(body: ChatRequestBody):
+    from app.agents.customer_service.orchestrator import run_chat_pipeline
+    try:
+        result = await run_chat_pipeline(
+            message=body.message,
+            session_id=body.session_id,
+            customer_id=body.customer_id,
+            enable_web_search=body.enable_web_search,
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/compare", tags=["对比"])

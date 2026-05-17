@@ -23,7 +23,7 @@ import type {
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:8003",
-  timeout: 60000, // Agent 链较长，给 60s
+  timeout: 120000, // Agent 链较长，给 60s
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,4 +1,4 @@
-// AutoLens — pages/CustomerService.tsx
+
 import { useState, useRef, useEffect } from "react";
 import PageHeader from "../components/PageHeader";
 import ChatBubble from "../components/chat/ChatBubble";
@@ -6,6 +6,7 @@ import ChatInput from "../components/chat/ChatInput";
 import ChatAgentChain from "../components/chat/ChatAgentChain";
 import ChatEvidence from "../components/chat/ChatEvidence";
 import type { ChatMessage, RecommendEvidence } from "../types";
+import { chat } from "../api/client";
 
 const mockAnswers: Record<string, string> = {
   default: `根据您的问题，我为您整理了以下信息：
@@ -50,6 +51,7 @@ export default function CustomerService() {
   const [webSearch, setWebSearch] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
   const [evidence, setEvidence] = useState<RecommendEvidence[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,23 +72,40 @@ export default function CustomerService() {
     setEvidence([]);
     setCurrentStep(0);
 
-    // 模拟 Agent 链路
-    for (let i = 0; i < 4; i++) {
-      await new Promise((r) => setTimeout(r, 700));
-      setCurrentStep(i);
+    try {
+      // 模拟 Agent 步骤动画
+      const stepTimer = setInterval(() => {
+        setCurrentStep((prev) => (prev < 3 ? prev + 1 : prev));
+      }, 1500);
+
+      const res = await chat({
+        message: input,
+        session_id: sessionId || undefined,
+        enable_web_search: webSearch,
+      });
+
+      clearInterval(stepTimer);
+      setSessionId(res.session_id);
+      setCurrentStep(4);
+      setEvidence(res.evidence || []);
+
+      const aiMsg: ChatMessage = {
+        role: "assistant",
+        content: res.answer,
+        created_at: res.created_at,
+      };
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch (e) {
+      setCurrentStep(-1);
+      const errMsg: ChatMessage = {
+        role: "assistant",
+        content: "抱歉，服务出现问题，请稍后重试。",
+        created_at: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, errMsg]);
+    } finally {
+      setLoading(false);
     }
-
-    await new Promise((r) => setTimeout(r, 500));
-
-    const aiMsg: ChatMessage = {
-      role: "assistant",
-      content: mockAnswers.default,
-      created_at: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, aiMsg]);
-    setEvidence(mockEvidence);
-    setCurrentStep(4);
-    setLoading(false);
   };
 
   const handleClear = () => {
