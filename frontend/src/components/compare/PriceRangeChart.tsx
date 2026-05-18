@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import type { CompareVehicle } from "./VehicleSelector";
 
-const COLORS = ["#3d5a3d", "#5a7a5a", "#8aaa7a", "#b8d4a8"];
+const COLORS = ["#3d5a3d", "#e67e00", "#1a73e8"];
 
 interface PriceRangeChartProps {
   vehicles: CompareVehicle[];
@@ -19,12 +19,13 @@ interface PriceRangeChartProps {
 
 const CustomDot = (props: any) => {
   const { cx, cy, fill, payload } = props;
+  const r = Math.max(8, Math.min(20, payload.price_min / 3));
   return (
     <g>
-      <circle cx={cx} cy={cy} r={20} fill={fill} fillOpacity={0.85} />
+      <circle cx={cx} cy={cy} r={r} fill={fill} fillOpacity={0.85} />
       <text
         x={cx}
-        y={cy - 26}
+        y={cy - r - 4}
         textAnchor="middle"
         fontSize={11}
         fill="#2d2d2d"

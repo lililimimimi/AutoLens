@@ -13,7 +13,7 @@ const brandColors: Record<string, string> = {
 };
 
 interface CompareTableProps {
-  vehicles: CompareVehicle[];
+  vehicles: any[];
 }
 
 export default function CompareTable({ vehicles }: CompareTableProps) {
@@ -218,9 +218,9 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
-                    {v.pros.map((p, i) => (
+                    {(v.highlights || []).map((h: string, i: number) => (
                       <span key={i} style={{ fontSize: 12, color: "#555" }}>
-                        · {p}
+                        · {h}
                       </span>
                     ))}
                   </div>
@@ -231,11 +231,11 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
-                    {v.cons.map((c, i) => (
-                      <span key={i} style={{ fontSize: 12, color: "#999" }}>
-                        · {c}
+                    {(v.highlights || []).length === 0 && (
+                      <span style={{ fontSize: 12, color: "#bbb" }}>
+                        暂无数据
                       </span>
-                    ))}
+                    )}
                   </div>
                 </td>
               </tr>

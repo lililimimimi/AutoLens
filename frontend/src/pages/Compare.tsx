@@ -2,21 +2,25 @@
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
 import VehicleSelector, {
-  mockVehicles,
   type CompareVehicle,
 } from "../components/compare/VehicleSelector";
 import ScoreChart from "../components/compare/ScoreChart";
 import PriceRangeChart from "../components/compare/PriceRangeChart";
 import AbilityChart from "../components/compare/AbilityChart";
 import CompareTable from "../components/compare/CompareTable";
+import { getVehicles } from "../api/client";
+import { useEffect } from "react";
 
 export default function Compare() {
-  const [selected, setSelected] = useState<CompareVehicle[]>([
-    mockVehicles[0],
-    mockVehicles[1],
-    mockVehicles[2],
-  ]);
+  const [selected, setSelected] = useState<any[]>([]);
+
   const [compared, setCompared] = useState(true);
+
+  const [allVehicles, setAllVehicles] = useState<any[]>([]);
+
+  useEffect(() => {
+    getVehicles().then(setAllVehicles).catch(console.error);
+  }, []);
 
   const handleAdd = (v: CompareVehicle) => {
     if (selected.length < 4) setSelected((prev) => [...prev, v]);
@@ -41,6 +45,7 @@ export default function Compare() {
 
       {/* 选车区域 */}
       <VehicleSelector
+        allVehicles={allVehicles}
         selected={selected}
         onAdd={handleAdd}
         onRemove={handleRemove}

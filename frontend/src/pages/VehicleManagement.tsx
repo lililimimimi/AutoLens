@@ -17,21 +17,27 @@ export default function VehicleManagement() {
   const [search, setSearch] = useState("");
   const [energy, setEnergy] = useState("全部");
   const [body, setBody] = useState("全部");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const [modalOpen, setModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<any | null>(null);
 
   useEffect(() => {
     getVehicles().then(setVehicles).catch(console.error);
   }, []);
-  
 
   // 筛选
+  // 先过滤
   const filtered = vehicles.filter((v) => {
     const matchSearch = v.brand.includes(search) || v.model.includes(search);
     const matchEnergy = energy === "全部" || v.energy_type === energy;
     const matchBody = body === "全部" || v.body_type === body;
     return matchSearch && matchEnergy && matchBody;
   });
+
+  // 再分页
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const handleAdd = () => {
     setEditingVehicle(null);
@@ -76,11 +82,20 @@ export default function VehicleManagement() {
       {/* 筛选栏 */}
       <VehicleFilter
         search={search}
-        onSearch={setSearch}
+        onSearch={(v) => {
+          setSearch(v);
+          setPage(1);
+        }}
         energy={energy}
-        onEnergy={setEnergy}
+        onEnergy={(v) => {
+          setEnergy(v);
+          setPage(1);
+        }}
+        onBody={(v) => {
+          setBody(v);
+          setPage(1);
+        }}
         body={body}
-        onBody={setBody}
         onAdd={handleAdd}
       />
 
@@ -133,10 +148,55 @@ export default function VehicleManagement() {
 
       {/* 表格 */}
       <VehicleTable
-        vehicles={filtered}
+        vehicles={paginated}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+      {/* 分页 */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 12,
+          marginTop: 16,
+          fontSize: 14,
+        }}
+      >
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 14,
+            border: "1.5px solid #e0e0d8",
+            background: page === 1 ? "#f5f5f0" : "#fff",
+            color: page === 1 ? "#bbb" : "#2d2d2d",
+            cursor: page === 1 ? "not-allowed" : "pointer",
+          }}
+        >
+          上一页
+        </button>
+        <span style={{ color: "#888" }}>
+          第 {page} / {totalPages} 页，共 {filtered.length} 条
+        </span>
+        <button
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page === totalPages}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 14,
+            border: "1.5px solid #e0e0d8",
+            background: page === totalPages ? "#f5f5f0" : "#fff",
+            color: page === totalPages ? "#bbb" : "#2d2d2d",
+            cursor: page === totalPages ? "not-allowed" : "pointer",
+          }}
+        >
+          下一页
+        </button>
+      </div>
 
       {/* 弹窗 */}
       {modalOpen && (

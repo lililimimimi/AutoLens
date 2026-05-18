@@ -1,11 +1,11 @@
-// AutoLens — components/vehicle/VehicleModal.tsx
+
 import { useState, useEffect } from "react";
-import type { MockVehicle } from "./VehicleTable";
+
 
 const GREEN = "#5a7a5a";
 const GREEN_DARK = "#3d5a3d";
 
-const emptyVehicle: Omit<MockVehicle, "id"> = {
+const emptyVehicle: Omit<any, "id"> = {
   brand: "",
   model: "",
   energy_type: "纯电",
@@ -19,8 +19,8 @@ const emptyVehicle: Omit<MockVehicle, "id"> = {
 };
 
 interface VehicleModalProps {
-  vehicle: MockVehicle | null; // null = 新增，有值 = 编辑
-  onSave: (v: Omit<MockVehicle, "id">) => void;
+  vehicle: any | null;
+  onSave: (v: any) => void;
   onClose: () => void;
 }
 
@@ -63,7 +63,7 @@ export default function VehicleModal({
   onSave,
   onClose,
 }: VehicleModalProps) {
-  const [form, setForm] = useState<Omit<MockVehicle, "id">>(emptyVehicle);
+  const [form, setForm] = useState<Omit<any, "id">>(emptyVehicle);
   const [highlightInput, setHighlightInput] = useState("");
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function VehicleModal({
   const removeHighlight = (h: string) => {
     setForm((prev) => ({
       ...prev,
-      highlights: prev.highlights.filter((x) => x !== h),
+      highlights: prev.highlights.filter((x: string) => x !== h),
     }));
   };
 
@@ -277,7 +277,7 @@ export default function VehicleModal({
             </button>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {form.highlights.map((h) => (
+            {form.highlights.map((h: string) => (
               <span
                 key={h}
                 style={{

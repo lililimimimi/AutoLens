@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import type { CompareVehicle } from "./VehicleSelector";
 
-const COLORS = ["#3d5a3d", "#5a7a5a", "#8aaa7a", "#b8d4a8"];
+const COLORS = ["#3d5a3d", "#e67e00", "#1a73e8"];
 
 const dimensions = [
   { key: "budget", label: "预算" },
@@ -22,6 +22,8 @@ const dimensions = [
   { key: "safety", label: "安全" },
 ];
 
+
+
 interface AbilityChartProps {
   vehicles: CompareVehicle[];
 }
@@ -30,7 +32,30 @@ export default function AbilityChart({ vehicles }: AbilityChartProps) {
   const data = dimensions.map((dim) => {
     const row: Record<string, any> = { name: dim.label };
     vehicles.forEach((v) => {
-      row[`${v.brand} ${v.model}`] = v.scores[dim.key as keyof typeof v.scores];
+      
+      const score =
+        dim.key === "budget"
+          ? Math.min(100, 100 - (v.price_min / 150) * 100)
+          : dim.key === "range"
+            ? Math.min(100, (v.range_km || 0) / 15)
+            : dim.key === "space"
+              ? v.seats >= 6
+                ? 95
+                : v.seats >= 5
+                  ? 80
+                  : 65
+              : dim.key === "charging"
+                ? v.energy_type === "纯电"
+                  ? 85
+                  : v.energy_type === "插混"
+                    ? 75
+                    : 70
+                : dim.key === "autopilot"
+                  ? v.autopilot_level === "L2+"
+                    ? 90
+                    : 70
+                  : 80; 
+      row[`${v.brand} ${v.model}`] = Math.round(score);
     });
     return row;
   });

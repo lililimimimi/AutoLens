@@ -360,6 +360,55 @@ def get_dashboard_stats() -> dict:
     ).fetchall()
     stage_dist = {r["stage"]: r["cnt"] for r in stage_rows}
 
+    # 热门推荐车型 Top5
+    rec_rows = conn.execute(
+        "SELECT results FROM recommendations ORDER BY created_at DESC LIMIT 50"
+    ).fetchall()
+
+    model_counts = {}
+    for row in rec_rows:
+        try:
+            results = json.loads(row["results"]) if isinstance(row["results"], str) else row["results"]
+            for r in (results or []):
+                v = r.get("vehicle") or {}
+                name = f"{v.get('brand', '')} {v.get('model', '')}".strip()
+                if name:
+                    model_counts[name] = model_counts.get(name, 0) + 1
+        except Exception:
+            continue
+
+    top_models = sorted(
+        [{"name": k, "count": v} for k, v in model_counts.items()],
+        key=lambda x: x["count"], reverse=True
+    )[:5]
+
+    # 近14天活跃趋势
+    daily_rows = conn.execute("""
+        SELECT date(created_at) as date, COUNT(*) as cnt
+        FROM recommendations
+        WHERE created_at >= datetime('now', '-14 days')
+        GROUP BY date(created_at)
+    """).fetchall()
+    rec_by_date = {r["date"]: r["cnt"] for r in daily_rows}
+
+    chat_rows = conn.execute("""
+        SELECT date(created_at) as date, COUNT(*) as cnt
+        FROM chat_sessions
+        WHERE created_at >= datetime('now', '-14 days')
+        GROUP BY date(created_at)
+    """).fetchall()
+    chat_by_date = {r["date"]: r["cnt"] for r in chat_rows}
+
+    from datetime import date, timedelta
+    daily_activity = []
+    for i in range(14):
+        d = (date.today() - timedelta(days=13 - i)).isoformat()
+        daily_activity.append({
+            "date": d[5:],  # 只显示月/日
+            "recommend": rec_by_date.get(d, 0),
+            "chat": chat_by_date.get(d, 0),
+        })
+
     conn.close()
 
     return {
@@ -369,7 +418,7 @@ def get_dashboard_stats() -> dict:
         "recommendations_7d": recs_7d,
         "total_chats": total_chats,
         "chats_7d": chats_7d,
-        "top_recommended_models": [],   # 后续 analytics.py 补充
+        "top_recommended_models": top_models,
         "customer_stage_dist": stage_dist,
-        "daily_activity_14d": [],       # 后续 analytics.py 补充
+        "daily_activity_14d": daily_activity,
     }
