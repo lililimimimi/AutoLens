@@ -60,45 +60,71 @@ export default function VehicleFilter({
         }}
       />
       {/* 能源筛选 */}
-      <select
-        value={energy}
-        onChange={(e) => onEnergy(e.target.value)}
-        style={{
-          padding: "8px 14px",
-          borderRadius: 8,
-          fontSize: 14,
-          border: "1.5px solid #e0e0d8",
-          background: "#fff",
-          color: "#666",
-          cursor: "pointer",
-          outline: "none",
-        }}
-      >
-        <option value="全部">能源：全部</option>
-        <option value="纯电">纯电</option>
-        <option value="插混">插混</option>
-        <option value="增程">增程</option>
-      </select>
-      <select
-        value={body}
-        onChange={(e) => onBody(e.target.value)}
-        style={{
-          padding: "8px 14px",
-          borderRadius: 8,
-          fontSize: 14,
-          border: "1.5px solid #e0e0d8",
-          background: "#fff",
-          color: "#666",
-          cursor: "pointer",
-          outline: "none",
-        }}
-      >
-        <option value="全部">车身：全部</option>
-        <option value="SUV">SUV</option>
-        <option value="轿车">轿车</option>
-        <option value="MPV">MPV</option>
-        <option value="跑车">跑车</option>
-      </select>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span
+          style={{
+            fontSize: 14,
+            color: "#3d5a3d",
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+            marginRight: 4,
+          }}
+        >
+          能源类型：
+        </span>
+        <select
+          value={energy}
+          onChange={(e) => onEnergy(e.target.value)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: 8,
+            fontSize: 14,
+            border: "1.5px solid #e0e0d8",
+            background: "#fff",
+            color: "#666",
+            cursor: "pointer",
+            outline: "none",
+          }}
+        >
+          <option value="全部">全部</option>
+          <option value="纯电">纯电</option>
+          <option value="插混">插混</option>
+          <option value="增程">增程</option>
+        </select>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span
+          style={{
+            fontSize: 14,
+            color: "#3d5a3d",
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+            marginRight: 4,
+          }}
+        >
+          车身类型：
+        </span>
+        <select
+          value={body}
+          onChange={(e) => onBody(e.target.value)}
+          style={{
+            padding: "8px 14px",
+            borderRadius: 8,
+            fontSize: 14,
+            border: "1.5px solid #e0e0d8",
+            background: "#fff",
+            color: "#666",
+            cursor: "pointer",
+            outline: "none",
+          }}
+        >
+          <option value="全部">全部</option>
+          <option value="SUV">SUV</option>
+          <option value="轿车">轿车</option>
+          <option value="MPV">MPV</option>
+          <option value="跑车">跑车</option>
+        </select>
+      </div>
       {/* 新增按钮 */}
       <button
         onClick={onAdd}

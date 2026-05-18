@@ -1,14 +1,20 @@
+// components/compare/VehicleSelector.tsx
+import { useState } from "react";
+import SelectedCards from "./SelectedCards";
+import QuickFilters from "./QuickFilters";
+import AddVehicleModal from "./AddVehicleModal";
 
-
-const GREEN = "#5a7a5a";
 const GREEN_DARK = "#3d5a3d";
+const MAX = 5;
 
 export interface CompareVehicle {
   id: number;
   brand: string;
   model: string;
   energy_type: string;
+  body_type?: string;
   price_min: number;
+  price_max: number;
   range_km: number;
   autopilot_level: string;
   seats: number;
@@ -25,8 +31,7 @@ export interface CompareVehicle {
   };
 }
 
-
-interface VehicleSelectorProps {
+interface Props {
   allVehicles: any[];
   selected: CompareVehicle[];
   onAdd: (v: CompareVehicle) => void;
@@ -40,10 +45,14 @@ export default function VehicleSelector({
   onAdd,
   onRemove,
   onCompare,
-}: VehicleSelectorProps) {
-  const available = allVehicles.filter(
-    (v) => !selected.find((s) => s.id === v.id),
-  );
+}: Props) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [quickFilter, setQuickFilter] = useState("全部");
+
+  const handleAdd = (v: any) => {
+    onAdd(v);
+    if (selected.length + 1 >= MAX) setModalOpen(false);
+  };
 
   return (
     <div
@@ -52,17 +61,30 @@ export default function VehicleSelector({
         borderRadius: 12,
         padding: "20px 24px",
         marginBottom: 20,
+        border: "1.5px solid #e8ede8",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}
     >
+      {/* 顶部 */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
+          alignItems: "flex-start",
         }}
       >
-        <div style={{ fontSize: 16, fontWeight: 600 }}>选择对比车型</div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: "#2d2d2d" }}>
+            选择对比车型
+          </div>
+          <div style={{ fontSize: 13, color: "#999", marginTop: 3 }}>
+            最多可选择 {MAX} 款车型，已选择{" "}
+            <span style={{ color: GREEN_DARK, fontWeight: 600 }}>
+              {selected.length}/{MAX}
+            </span>{" "}
+            款
+          </div>
+        </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button
             style={{
@@ -96,80 +118,22 @@ export default function VehicleSelector({
         </div>
       </div>
 
-      {/* 已选车型标签 */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          marginBottom: selected.length < 4 ? 12 : 0,
-        }}
-      >
-        {selected.map((v) => (
-          <div
-            key={v.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              background: "#f0f4f0",
-              borderRadius: 20,
-              padding: "6px 14px",
-              fontSize: 14,
-              color: GREEN_DARK,
-              border: `1px solid ${GREEN}`,
-            }}
-          >
-            <span>
-              {v.brand} {v.model}
-            </span>
-            <span
-              onClick={() => onRemove(v.id)}
-              style={{
-                cursor: "pointer",
-                color: "#999",
-                fontSize: 16,
-                lineHeight: 1,
-              }}
-            >
-              ×
-            </span>
-          </div>
-        ))}
+      <SelectedCards
+        selected={selected}
+        onRemove={onRemove}
+        onOpenModal={() => setModalOpen(true)}
+      />
+      <QuickFilters active={quickFilter} onChange={(f) => setQuickFilter(f)} />
 
-        {/* 添加车型下拉 */}
-        {selected.length < 4 && available.length > 0 && (
-          <select
-            onChange={(e) => {
-              const v = allVehicles.find(
-                (v) => v.id === Number(e.target.value),
-              );
-              if (v) onAdd(v);
-              e.target.value = "";
-            }}
-            defaultValue=""
-            style={{
-              padding: "6px 14px",
-              borderRadius: 20,
-              fontSize: 14,
-              border: "1.5px dashed #e0e0d8",
-              background: "#fff",
-              color: "#999",
-              cursor: "pointer",
-              outline: "none",
-            }}
-          >
-            <option value="" disabled>
-              + 添加车型
-            </option>
-            {available.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.brand} {v.model}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
+      {modalOpen && (
+        <AddVehicleModal
+          vehicles={allVehicles}
+          selectedIds={selected.map((v) => v.id)}
+          quickFilter={quickFilter}
+          onAdd={handleAdd}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

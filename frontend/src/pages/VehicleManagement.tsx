@@ -11,6 +11,7 @@ import {
   deleteVehicle,
 } from "../api/client";
 import { useEffect } from "react";
+import { Car, Zap, Fuel, Battery } from "lucide-react";
 
 export default function VehicleManagement() {
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -102,48 +103,84 @@ export default function VehicleManagement() {
       {/* 统计栏 */}
       <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
         {[
-          { label: "全部车型", value: vehicles.length },
+          {
+            label: "全部车型",
+            value: vehicles.length,
+            icon: <Car size={18} color="#5a7a5a" />,
+            filterValue: "全部",
+          },
           {
             label: "纯电",
             value: vehicles.filter((v) => v.energy_type === "纯电").length,
+            icon: <Zap size={18} color="#5a7a5a" />,
+            filterValue: "纯电",
           },
           {
             label: "插混",
             value: vehicles.filter((v) => v.energy_type === "插混").length,
+            icon: <Fuel size={18} color="#5a7a5a" />,
+            filterValue: "插混",
           },
           {
             label: "增程",
             value: vehicles.filter((v) => v.energy_type === "增程").length,
+            icon: <Battery size={18} color="#5a7a5a" />,
+            filterValue: "增程",
           },
         ].map((s) => (
           <div
             key={s.label}
+            onClick={() => setEnergy(s.filterValue)}
             style={{
               background: "#fff",
-              borderRadius: 10,
+              borderRadius: 12,
               padding: "12px 20px",
               display: "flex",
               alignItems: "center",
-              gap: 10,
+              gap: 12,
+              border:
+                energy === s.filterValue
+                  ? "1.5px solid #3d5a3d"
+                  : "1.5px solid #e8ede8",
+              minWidth: 0,
+              flex: 1,
+              height: 56,
+              cursor: "pointer",
+              transition: "border-color 0.15s",
             }}
           >
-            <span style={{ fontSize: 22, fontWeight: 700, color: "#3d5a3d" }}>
-              {s.value}
-            </span>
-            <span style={{ fontSize: 13, color: "#999" }}>{s.label}</span>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: energy === s.filterValue ? "#d4e4d4" : "#f0f5f0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              {s.icon}
+            </div>
+            <div>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#3d5a3d",
+                  lineHeight: 1.2,
+                }}
+              >
+                {s.value}
+              </div>
+              <div style={{ fontSize: 12, color: "#999", marginTop: 2 }}>
+                {s.label}
+              </div>
+            </div>
           </div>
         ))}
-        <div
-          style={{
-            marginLeft: "auto",
-            display: "flex",
-            alignItems: "center",
-            fontSize: 13,
-            color: "#bbb",
-          }}
-        >
-          显示 {filtered.length} / {vehicles.length} 条
-        </div>
+        
       </div>
 
       {/* 表格 */}

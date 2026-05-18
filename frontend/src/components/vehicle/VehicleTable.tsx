@@ -1,4 +1,4 @@
-// AutoLens — components/vehicle/VehicleTable.tsx
+
 import { Pencil, Trash2 } from "lucide-react";
 
 const GREEN = "#5a7a5a";
@@ -23,13 +23,25 @@ export default function VehicleTable({
   onDelete,
 }: VehicleTableProps) {
   return (
-    <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden" }}>
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 12,
+        overflow: "hidden",
+        border: "1.5px solid #e8e8e4",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+      }}
+    >
       <table
         style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}
       >
         <thead>
           <tr
-            style={{ background: "#f5f5f0", borderBottom: "2px solid #e8e8e4" }}
+            style={{
+              background: "#f5f5f0",
+              borderBottom: "2px solid #e8e8e4",
+              borderTop: "2px solid #e8e8e4",
+            }}
           >
             {[
               "品牌",
@@ -49,8 +61,8 @@ export default function VehicleTable({
                   padding: "12px 14px",
                   textAlign: "left",
                   fontSize: 13,
-                  color: "#888",
-                  fontWeight: 500,
+                  color: "#3d5a3d",
+                  fontWeight: 600,
                 }}
               >
                 {h}
