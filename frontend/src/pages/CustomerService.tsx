@@ -8,35 +8,7 @@ import ChatEvidence from "../components/chat/ChatEvidence";
 import type { ChatMessage, RecommendEvidence } from "../types";
 import { chat } from "../api/client";
 
-const mockAnswers: Record<string, string> = {
-  default: `根据您的问题，我为您整理了以下信息：
 
-**关于新能源汽车选购：**
-
-1. **纯电车型** 适合有家充、日常通勤距离短的用户
-2. **插混/增程** 适合没有家充或长途需求较多的用户
-3. **预算参考** 15-25万是目前新能源性价比最高的区间
-
-如需更精准的推荐，可以告诉我您的具体需求。`,
-};
-
-const mockEvidence: RecommendEvidence[] = [
-  {
-    source: "车型知识库",
-    content: "比亚迪DM-i插混系统在无家充场景下表现优异，亏电油耗约5.5L/100km",
-    relevance: 0.92,
-  },
-  {
-    source: "政策法规",
-    content: "2024年新能源汽车购置税减免政策延续，购车最高可减免1万元",
-    relevance: 0.87,
-  },
-  {
-    source: "用户案例",
-    content: "无家充用户选择增程车型满意度显著高于纯电车型",
-    relevance: 0.81,
-  },
-];
 
 const welcomeMessage: ChatMessage = {
   role: "assistant",
@@ -73,7 +45,6 @@ export default function CustomerService() {
     setCurrentStep(0);
 
     try {
-      // 模拟 Agent 步骤动画
       const stepTimer = setInterval(() => {
         setCurrentStep((prev) => (prev < 3 ? prev + 1 : prev));
       }, 1500);
@@ -123,7 +94,7 @@ export default function CustomerService() {
       />
 
       <div
-        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20 }}
+        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20,height: "calc(100vh - 250px)" }}
       >
         {/* 左：对话区域 */}
         <div

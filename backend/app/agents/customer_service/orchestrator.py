@@ -57,15 +57,28 @@ async def run_chat_pipeline(
     if intent == "推荐":
         print("  [3/4] ProfileAgent 提取画像...")
         profile = await extract_profile(message, history)
+        
 
-        if not profile:
-            answer = """需要了解更多信息才能为您推荐。请告诉我：
-- **预算范围**（万元）
-- **家庭人数**
-- **通勤距离**
-- **是否有家充**
+        # 检查画像是否足够完整
+        has_enough = profile.get("budget_max") or profile.get("budget_min")
 
-或前往**智能推荐**页面填写表单获得精准推荐。"""
+        if not profile or not has_enough:
+            # 提取用户提到的品牌或关键词
+            keywords = []
+            for word in ["小米", "特斯拉", "比亚迪", "理想", "问界", "华为", "小鹏", "蔚来"]:
+                if word in message:
+                    keywords.append(word)
+            
+            brand_hint = f"您提到了{'、'.join(keywords)}，" if keywords else ""
+            
+            answer = f"""您好！{brand_hint}为了给您推荐最合适的车型，还需要了解：
+
+        - **预算范围**是多少万？
+        - **家庭人数**是几口人？
+        - **通勤距离**大概多远？
+        - **是否有家充**条件？
+
+        或者您可以前往**智能推荐**页面填写表单，获得更精准的推荐结果。"""
             answer = await reflect_and_get_content(answer)
             save_message(session_id, "assistant", answer, customer_id)
             return {

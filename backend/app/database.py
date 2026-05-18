@@ -29,26 +29,34 @@ def init_db():
 
     # 车型表
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS vehicles (
-            id              INTEGER PRIMARY KEY AUTOINCREMENT,
-            brand           TEXT NOT NULL,
-            model           TEXT NOT NULL,
-            energy_type     TEXT NOT NULL,
-            body_type       TEXT NOT NULL,
-            price_min       REAL NOT NULL,
-            price_max       REAL NOT NULL,
-            range_km        INTEGER,
-            autopilot_level TEXT,
-            seats           INTEGER DEFAULT 5,
-            cargo_liters    INTEGER,
-            charge_time_ac  REAL,
-            charge_time_dc  REAL,
-            highlights      TEXT DEFAULT '[]',  -- JSON array
-            image_url       TEXT,
-            created_at      TEXT NOT NULL,
-            updated_at      TEXT NOT NULL
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS vehicles (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand           TEXT NOT NULL,
+        model           TEXT NOT NULL,
+        vehicle_type    TEXT,
+        energy_type     TEXT NOT NULL,
+        body_type       TEXT,
+        price_min       REAL NOT NULL,
+        price_max       REAL NOT NULL,
+        range_km        INTEGER,
+        battery_kwh     REAL,
+        fast_charge_minutes INTEGER,
+        seats           INTEGER DEFAULT 5,
+        drive_type      TEXT,
+        autopilot_level TEXT,
+        smart_cockpit   TEXT,
+        wheelbase       INTEGER,
+        cargo_liters    INTEGER,
+        safety_score    REAL,
+        monthly_sales   INTEGER,
+        suitable_scenarios TEXT DEFAULT '[]',
+        highlights      TEXT DEFAULT '[]',
+        weaknesses      TEXT DEFAULT '[]',
+        image_url       TEXT,
+        created_at      TEXT NOT NULL,
+        updated_at      TEXT NOT NULL
+    )
+""")
 
     # 客户表
     cursor.execute("""
