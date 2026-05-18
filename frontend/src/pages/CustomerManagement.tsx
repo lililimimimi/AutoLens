@@ -1,20 +1,41 @@
 
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
-import CustomerList, {
-  mockCustomers,
-  type MockCustomer,
-} from "../components/customer/CustomerList";
+import { getCustomers, updateCustomerNotes } from "../api/client";
+import { useEffect } from "react";
+import CustomerList from "../components/customer/CustomerList";
 import CustomerDetail from "../components/customer/CustomerDetail";
+import CustomerModal from "../components/customer/CustomerModal";
+import { createCustomer } from "../api/client";
 
 export default function CustomerManagement() {
-  const [selected, setSelected] = useState<MockCustomer | null>(
-    mockCustomers[0],
-  );
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleAdd = () => {
-    // TODO: 弹出新增客户表单
-    alert("新增客户功能开发中");
+  useEffect(() => {
+    getCustomers()
+      .then((data) => {
+        setCustomers(data);
+        if (data.length > 0) setSelected(data[0]);
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleAdd = () => setModalOpen(true);
+
+  const handleSave = async (data: any) => {
+    const created = await createCustomer(data);
+    setCustomers((prev) => [created, ...prev]);
+    setSelected(created);
+    setModalOpen(false);
+  };
+
+  const handleStageChange = (id: number, stage: string) => {
+    setCustomers((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, stage } : c)),
+    );
+    setSelected((prev: any) => (prev?.id === id ? { ...prev, stage } : prev));
   };
 
   return (
@@ -32,11 +53,14 @@ export default function CustomerManagement() {
           display: "grid",
           gridTemplateColumns: "1fr 1.4fr",
           gap: 20,
-          height: "calc(100vh - 260px)",
+          height: "calc(100vh - 220px)",
+          overflow: "hidden",
+          borderRadius: 12,
         }}
       >
         {/* 左：客户列表 */}
         <CustomerList
+          customers={customers}
           selected={selected}
           onSelect={setSelected}
           onAdd={handleAdd}
@@ -44,7 +68,11 @@ export default function CustomerManagement() {
 
         {/* 右：客户详情 */}
         {selected ? (
-          <CustomerDetail key={selected.id} customer={selected} />
+          <CustomerDetail
+            key={selected.id}
+            customer={selected}
+            onStageChange={handleStageChange}
+          />
         ) : (
           <div
             style={{
@@ -55,12 +83,21 @@ export default function CustomerManagement() {
               justifyContent: "center",
               color: "#bbb",
               fontSize: 15,
+              
             }}
           >
             点击左侧客户查看详情
           </div>
         )}
       </div>
+
+      {modalOpen && (
+        <CustomerModal
+          onSave={handleSave}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
-  );
+  )
 }
+

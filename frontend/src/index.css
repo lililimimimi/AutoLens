@@ -25,3 +25,27 @@ body {
     width: 100% !important;
   }
 }
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #5a7a5a;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 4px;
+}
+

@@ -1,4 +1,4 @@
-// AutoLens — components/recommend/RecommendForm.tsx
+import { ClipboardList } from "lucide-react";
 import OptionBtn from "./OptionBtn";
 import type {
   UserProfile,
@@ -6,6 +6,8 @@ import type {
   EnergyType,
   FocusPoint,
 } from "../../types";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 const GREEN = "#5a7a5a";
 
@@ -84,42 +86,68 @@ export default function RecommendForm({
 
   return (
     <div style={{ background: "#fff", borderRadius: 12, padding: "24px 28px" }}>
-      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          fontSize: 18,
+          fontWeight: 600,
+          marginBottom: 20,
+        }}
+      >
+        <ClipboardList size={18} color="#5a7a5a" />
         购车需求表单
       </div>
 
       {/* 预算范围 */}
       <FormRow label="预算范围（万）">
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input
-            type="number"
-            value={profile.budget_min || ""}
-            onChange={(e) =>
-              setProfile((p) => ({ ...p, budget_min: Number(e.target.value) }))
-            }
+        <div style={{ width: "100%", padding: "0 8px" }}>
+          <div
             style={{
-              width: 64,
-              padding: "6px 10px",
-              borderRadius: 6,
-              border: "1.5px solid #e0e0d8",
+              display: "flex",
+              justifyContent: "space-between",
               fontSize: 13,
+              color: "#5a7a5a",
+              fontWeight: 600,
+              marginBottom: 12,
+            }}
+          >
+            <span>{profile.budget_min}万</span>
+            <span>{profile.budget_max}万</span>
+          </div>
+          <Slider
+            range
+            min={5}
+            max={150}
+            step={1}
+            value={[profile.budget_min || 10, profile.budget_max || 30]}
+            onChange={(val) => {
+              const [min, max] = val as number[];
+              setProfile((p) => ({ ...p, budget_min: min, budget_max: max }));
+            }}
+            styles={{
+              track: { background: "#5a7a5a" },
+              handle: {
+                borderColor: "#5a7a5a",
+                background: "#fff",
+                opacity: 1,
+              },
+              rail: { background: "#e0e0d8" },
             }}
           />
-          <span style={{ color: "#999" }}>—</span>
-          <input
-            type="number"
-            value={profile.budget_max || ""}
-            onChange={(e) =>
-              setProfile((p) => ({ ...p, budget_max: Number(e.target.value) }))
-            }
+          <div
             style={{
-              width: 64,
-              padding: "6px 10px",
-              borderRadius: 6,
-              border: "1.5px solid #e0e0d8",
-              fontSize: 13,
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: 11,
+              color: "#ccc",
+              marginTop: 8,
             }}
-          />
+          >
+            <span>5万</span>
+            <span>150万</span>
+          </div>
         </div>
       </FormRow>
 

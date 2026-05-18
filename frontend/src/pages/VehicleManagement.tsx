@@ -2,21 +2,28 @@
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
 import VehicleFilter from "../components/vehicle/VehicleFilter";
-import VehicleTable, {
-  mockVehicleList,
-  type MockVehicle,
-} from "../components/vehicle/VehicleTable";
+import VehicleTable from "../components/vehicle/VehicleTable";
 import VehicleModal from "../components/vehicle/VehicleModal";
+import {
+  getVehicles,
+  createVehicle,
+  updateVehicle,
+  deleteVehicle,
+} from "../api/client";
+import { useEffect } from "react";
 
 export default function VehicleManagement() {
-  const [vehicles, setVehicles] = useState<MockVehicle[]>(mockVehicleList);
+  const [vehicles, setVehicles] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [energy, setEnergy] = useState("全部");
   const [body, setBody] = useState("全部");
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingVehicle, setEditingVehicle] = useState<MockVehicle | null>(
-    null,
-  );
+  const [editingVehicle, setEditingVehicle] = useState<any | null>(null);
+
+  useEffect(() => {
+    getVehicles().then(setVehicles).catch(console.error);
+  }, []);
+  
 
   // 筛选
   const filtered = vehicles.filter((v) => {
@@ -31,29 +38,27 @@ export default function VehicleManagement() {
     setModalOpen(true);
   };
 
-  const handleEdit = (v: MockVehicle) => {
+  const handleEdit = (v: any) => {
     setEditingVehicle(v);
     setModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("确认删除该车型？")) {
+      await deleteVehicle(id);
       setVehicles((prev) => prev.filter((v) => v.id !== id));
     }
   };
 
-  const handleSave = (data: Omit<MockVehicle, "id">) => {
+  const handleSave = async (data: any) => {
     if (editingVehicle) {
-      // 编辑
+      const updated = await updateVehicle(editingVehicle.id, data);
       setVehicles((prev) =>
-        prev.map((v) =>
-          v.id === editingVehicle.id ? { ...data, id: v.id } : v,
-        ),
+        prev.map((v) => (v.id === editingVehicle.id ? updated : v)),
       );
     } else {
-      // 新增
-      const newId = Math.max(...vehicles.map((v) => v.id)) + 1;
-      setVehicles((prev) => [...prev, { ...data, id: newId }]);
+      const created = await createVehicle(data);
+      setVehicles((prev) => [...prev, created]);
     }
     setModalOpen(false);
   };

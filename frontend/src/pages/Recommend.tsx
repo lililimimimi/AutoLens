@@ -1,44 +1,16 @@
 // AutoLens — pages/Recommend.tsx
 import { useState } from "react";
+import { Trophy } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import RecommendForm from "../components/recommend/RecommendForm";
 import AgentChain from "../components/recommend/AgentChain";
-import RecommendReport from "../components/recommend/RecommendReport";
-import type { UserProfile } from "../types";
+import { ResultCard } from "../components/recommend/ResultCard";
+import RecommendSummary from "../components/recommend/RecommendSummary";
+import RecommendRadarChart from "../components/recommend/RadarChart";
+import { recommend } from "../api/client";
+import type { UserProfile, RecommendEvidence } from "../types";
 
-const mockReport = `
-## 推荐总结
-
-基于您的需求（预算 15-25 万，4人以上家庭），我们为您推荐以下 3 款最匹配的新能源车型。
-
----
-
-## 🥇 比亚迪宋PLUS DM-i — 92分
-
-**直接结论：** 综合性价比最高，家庭用车首选。
-
-- 插混系统成熟，综合续航 1200km
-- 空间宽敞，适合4人以上家庭
-- 价格区间 15-19万，性价比极高
-
----
-
-## 🥈 理想L7 — 89分
-
-**直接结论：** 增程旗舰，长途无焦虑。
-
-- 综合续航 1315km
-- 家庭舒适性顶级
-
----
-
-## 🥉 问界M7 — 87分
-
-**直接结论：** 华为智驾加持，科技感强。
-
-- HUAWEI ADS 2.0，智驾能力业界标杆
-- 6/7座可选
-`;
+const GREEN = "#5a7a5a";
 
 export default function Recommend() {
   const [profile, setProfile] = useState<UserProfile>({
@@ -55,18 +27,40 @@ export default function Recommend() {
   const [deepSearch, setDeepSearch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [result, setResult] = useState<string | null>(null);
+  const [results, setResults] = useState<any[]>([]);
+  const [reportMd, setReportMd] = useState<string | null>(null);
+  const [evidence, setEvidence] = useState<RecommendEvidence[]>([]);
+  const [scene, setScene] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
   const handleSubmit = async () => {
     setLoading(true);
-    setResult(null);
-    for (let i = 0; i < 7; i++) {
-      setCurrentStep(i);
-      await new Promise((r) => setTimeout(r, 800));
+    setResults([]);
+    setReportMd(null);
+    setEvidence([]);
+    setCurrentStep(0);
+
+    setTimeout(() => setCurrentStep(1), 600);
+    setTimeout(() => setCurrentStep(2), 1200);
+
+    try {
+      const res = await recommend({
+        profile,
+        top_n: topN,
+        enable_deep_search: deepSearch,
+      });
+      setCurrentStep(7);
+      setResults(res.results || []);
+      setReportMd(res.report_md);
+      setEvidence(res.evidence || []);
+      setScene((res as any).scene || "");
+      setCreatedAt(res.created_at);
+    } catch (e) {
+      setCurrentStep(-1);
+      setReportMd("推荐生成失败，请稍后重试。");
+    } finally {
+      setLoading(false);
     }
-    setResult(mockReport);
-    setLoading(false);
-    setCurrentStep(7);
   };
 
   return (
@@ -74,13 +68,22 @@ export default function Recommend() {
       <PageHeader
         tags="MULTI-AGENT · RAG · DEEPSEARCH · SQLITE"
         title="智能推荐"
-        description="基于用户画像、车型库和多 Agent 协作生成可解释推荐。"
+        description="基于用户画像、车型库和多 Agent 协作生成可解释推荐，可开启联网搜索增强。"
         actionLabel="一键生成推荐"
         onAction={handleSubmit}
       />
+
+      {/* 上半部分：表单 + Agent链路 + 雷达图 */}
       <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20 }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 20,
+          marginBottom: 20,
+          alignItems: "stretch",
+        }}
       >
+        {/* 左：表单 */}
         <RecommendForm
           profile={profile}
           setProfile={setProfile}
@@ -91,11 +94,100 @@ export default function Recommend() {
           loading={loading}
           onSubmit={handleSubmit}
         />
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+        {/* 右：Agent链路 + 雷达图 */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            height: "100%",
+          }}
+        >
           <AgentChain currentStep={currentStep} />
-          <RecommendReport loading={loading} result={result} />
+          <div style={{ flex: 1, minHeight: 300 }}>
+            <RecommendRadarChart results={results} />
+          </div>
         </div>
       </div>
+
+      {/* 下半部分：推荐结果 + 推荐报告 */}
+      {(results.length > 0 || loading) && (
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}
+        >
+          {/* 左：推荐结果 */}
+          <div
+            style={{ background: "#fff", borderRadius: 12, padding: "20px" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 18,
+                fontWeight: 600,
+                marginBottom: 16,
+              }}
+            >
+              <Trophy size={18} color={GREEN} />
+              推荐结果
+              <span
+                style={{
+                  fontSize: 14,
+                  color: "#999",
+                  fontWeight: 400,
+                  marginLeft: 4,
+                }}
+              >
+                共 {results.length} 辆
+              </span>
+            </div>
+
+            {loading && (
+              <div
+                style={{
+                  textAlign: "center",
+                  color: "#999",
+                  fontSize: 14,
+                  padding: "40px 0",
+                }}
+              >
+                Agent 链路运行中，请稍候...
+              </div>
+            )}
+
+            {results.map((r, i) => (
+              <ResultCard key={i} result={r} rank={i} defaultOpen={i === 0} />
+            ))}
+          </div>
+
+          {/* 右：推荐报告 */}
+          <RecommendSummary
+            reportMd={reportMd || ""}
+            profile={profile}
+            evidence={evidence}
+            scene={scene}
+            createdAt={createdAt}
+          />
+        </div>
+      )}
+
+      {/* 未开始提示 */}
+      {!loading && results.length === 0 && !reportMd && (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 12,
+            padding: "60px 0",
+            textAlign: "center",
+            color: "#bbb",
+            fontSize: 14,
+          }}
+        >
+          填写左侧表单，点击「生成推荐」
+        </div>
+      )}
     </div>
   );
 }

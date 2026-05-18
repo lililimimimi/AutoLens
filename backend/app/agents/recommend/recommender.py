@@ -140,6 +140,14 @@ async def recommend(
         content = content.replace("```json", "").replace("```", "").strip()
         result = json.loads(content)
         result["scene"] = scene
+
+        # 给每个 ranking 补充完整车型信息
+        vehicle_map = {v["id"]: v for v in candidates}
+        for r in result.get("rankings", []):
+            vid = r.get("vehicle_id")
+            if vid and vid in vehicle_map:
+                r["vehicle"] = vehicle_map[vid]
+
         return result
 
     except Exception as e:

@@ -1,4 +1,4 @@
-
+import { GitBranch } from "lucide-react";
 const GREEN = "#5a7a5a";
 
 const agentSteps = [
@@ -28,7 +28,18 @@ export default function AgentChain({ currentStep }: AgentChainProps) {
           marginBottom: 20,
         }}
       >
-        <div style={{ fontSize: 18, fontWeight: 600 }}>Agent 调用链路</div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 18,
+            fontWeight: 600,
+          }}
+        >
+          <GitBranch size={18} color="#5a7a5a" />
+          Agent 调用链路
+        </div>
         {done && (
           <div
             style={{

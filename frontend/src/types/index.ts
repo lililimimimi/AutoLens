@@ -129,6 +129,7 @@ export interface RecommendResponse {
   scene: RecommendScene;
   results: RecommendResult[];
   report_md: string;
+  evidence: RecommendEvidence[];
   created_at: string;
 }
 
