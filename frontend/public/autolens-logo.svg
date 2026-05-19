@@ -1,0 +1,8 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AutoLens logo</title>
+  <desc id="desc">A minimalist AutoLens monogram mark with transparent background.</desc>
+  <path d="M24 72L44.5 24H55.6L35 72H24Z" fill="#1F5D46"/>
+  <path d="M52.8 24H63.8V62.3H76V72H52.8V24Z" fill="#262827"/>
+  <path d="M37.6 72C39.9 58.6 49.9 49.1 63.8 47.2V56.7C55.3 58.4 49.2 63.5 47.2 72H37.6Z" fill="#262827"/>
+  <path d="M59.2 43.6C62.5 43.6 65.2 40.9 65.2 37.6C65.2 34.3 62.5 31.6 59.2 31.6C55.9 31.6 53.2 34.3 53.2 37.6C53.2 40.9 55.9 43.6 59.2 43.6Z" stroke="#1F5D46" stroke-width="3"/>
+</svg>

@@ -58,16 +58,20 @@ export default function VehicleManagement() {
   };
 
   const handleSave = async (data: any) => {
-    if (editingVehicle) {
-      const updated = await updateVehicle(editingVehicle.id, data);
-      setVehicles((prev) =>
-        prev.map((v) => (v.id === editingVehicle.id ? updated : v)),
-      );
-    } else {
-      const created = await createVehicle(data);
-      setVehicles((prev) => [...prev, created]);
+    try {
+      if (editingVehicle) {
+        const updated = await updateVehicle(editingVehicle.id, data);
+        setVehicles((prev) =>
+          prev.map((v) => (v.id === editingVehicle.id ? updated : v)),
+        );
+      } else {
+        const created = await createVehicle(data);
+        setVehicles((prev) => [...prev, created]);
+      }
+      setModalOpen(false);
+    } catch (e: any) {
+      alert(e.response?.data?.detail || "保存失败，请检查必填项是否填写完整");
     }
-    setModalOpen(false);
   };
 
   return (

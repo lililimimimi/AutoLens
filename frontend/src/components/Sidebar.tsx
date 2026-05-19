@@ -8,6 +8,7 @@ import {
   Users,
   Car,
 } from "lucide-react";
+import autoLensLogo from "../assets/autolens-logo.svg";
 
 const navItems = [
   { path: "/", icon: BarChart2, label: "数据总览"},
@@ -41,30 +42,57 @@ export default function Sidebar() {
         overflowY: "auto",
       }}
     >
-      {/* Logo */}
+      {/* Brand */}
       <div style={{ padding: "0 20px 32px" }}>
         <div
           style={{
-            width: 36,
-            height: 36,
-            background: "#5a7a5a",
-            borderRadius: 8,
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            gap: 12,
             marginBottom: 8,
           }}
         >
-          <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>
-            A
-          </span>
+          <img
+            src={autoLensLogo}
+            alt="AutoLens"
+            style={{
+              width: 38,
+              height: 38,
+              display: "block",
+              flex: "0 0 auto",
+            }}
+          />
+          <div>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: 17,
+                color: "#242624",
+                letterSpacing: 0,
+                lineHeight: 1.1,
+              }}
+            >
+              AutoLens
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "#8a8f89",
+                marginTop: 4,
+                lineHeight: 1.25,
+              }}
+            >
+              智能选车平台
+            </div>
+          </div>
         </div>
-        <div style={{ fontWeight: 700, fontSize: 16, color: "#2d2d2d" }}>
-          AutoLens
-        </div>
-        <div style={{ fontSize: 14, color: "#999", marginTop: 2 }}>
-          新能源智能推荐平台
-        </div>
+        <div
+          style={{
+            height: 1,
+            background: "#eceee9",
+            marginTop: 18,
+          }}
+        />
       </div>
 
       {/* Nav */}
