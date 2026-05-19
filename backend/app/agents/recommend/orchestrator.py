@@ -21,6 +21,7 @@ async def run_recommend_pipeline(
     enable_deep_search: bool = False,
     customer_id: int = None,
 ) -> dict:
+    print(f"  [DeepSearch] enable={enable_deep_search}")
     """
     运行推荐 Agent 链（优化版）
     RouterAgent 已在上游处理，这里直接从 Research 开始
@@ -71,6 +72,7 @@ async def run_recommend_pipeline(
         "results": rankings,
         "report_md": report_md,
         "evidence": evidence,
+        "ai_summary": recommend_result.get("ai_summary", ""),
         "created_at": datetime.now().isoformat(),
     }
 

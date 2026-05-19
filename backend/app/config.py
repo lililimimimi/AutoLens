@@ -9,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     # ── 硅基流动 API ──────────────────────────
-    SILICONFLOW_API_KEY: str 
+    SILICONFLOW_API_KEY: str
+    TAVILY_API_KEY: str = ""
     SILICONFLOW_BASE_URL: str = "https://api.siliconflow.cn/v1"
 
     # 推荐使用的模型（硅基流动上的 DeepSeek）

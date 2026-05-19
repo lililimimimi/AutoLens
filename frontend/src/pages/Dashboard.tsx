@@ -87,7 +87,7 @@ export default function Dashboard() {
         <StatCard
           icon={<Car size={18} color="#5a7a5a" />}
           label="车型库"
-          value={38}
+          value={stats.total_vehicles}
           sub="覆盖主流新能源车型"
         />
       </div>

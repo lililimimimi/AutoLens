@@ -131,6 +131,7 @@ export interface RecommendResponse {
   report_md: string;
   evidence: RecommendEvidence[];
   created_at: string;
+  ai_summary?: string;
 }
 
 // ─────────────────────────────────────────
@@ -233,6 +234,7 @@ export interface DashboardStats {
   top_recommended_models: { name: string; count: number }[];
   customer_stage_dist: Record<CustomerStage, number>;
   daily_activity_14d: { date: string; recommend: number; chat: number }[];
+  total_vehicles: number;
 }
 
 // ─────────────────────────────────────────

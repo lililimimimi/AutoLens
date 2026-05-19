@@ -1,4 +1,4 @@
-// AutoLens — components/dashboard/EnergyPieChart.tsx
+import { useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -7,17 +7,28 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getVehicles } from "../../api/client";
 
-const COLORS = ["#3d5a3d", "#5a7a5a", "#8aaa7a", "#d4c89a"];
-
-const energyData = [
-  { name: "纯电", value: 21 },
-  { name: "插混", value: 2 },
-  { name: "增程", value: 12 },
-  { name: "燃油", value: 3 },
-];
+const COLORS = ["#3d5a3d", "#5a7a5a", "#8aaa7a", "#b8d4a8"];
 
 export default function EnergyPieChart() {
+  const [data, setData] = useState<{ name: string; value: number }[]>([]);
+
+  useEffect(() => {
+    getVehicles()
+      .then((vehicles) => {
+        const counts: Record<string, number> = {};
+        vehicles.forEach((v: any) => {
+          const type = v.energy_type || "未知";
+          counts[type] = (counts[type] || 0) + 1;
+        });
+        setData(
+          Object.entries(counts).map(([name, value]) => ({ name, value })),
+        );
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <div style={{ background: "#fff", borderRadius: 12, padding: "20px 16px" }}>
       <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
@@ -26,15 +37,15 @@ export default function EnergyPieChart() {
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
-            data={energyData}
+            data={data}
             cx="50%"
             cy="50%"
             innerRadius={50}
             outerRadius={75}
             dataKey="value"
           >
-            {energyData.map((_, i) => (
-              <Cell key={i} fill={COLORS[i]} />
+            {data.map((_, i) => (
+              <Cell key={i} fill={COLORS[i % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip contentStyle={{ fontSize: 12 }} />

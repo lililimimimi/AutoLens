@@ -359,6 +359,7 @@ def get_dashboard_stats() -> dict:
     ).fetchone()[0]
 
     total_chats = conn.execute("SELECT COUNT(*) FROM chat_sessions").fetchone()[0]
+    total_vehicles = conn.execute("SELECT COUNT(*) FROM vehicles").fetchone()[0]
     chats_7d = conn.execute(
         "SELECT COUNT(*) FROM chat_sessions WHERE created_at >= datetime('now', '-7 days')"
     ).fetchone()[0]
@@ -367,6 +368,7 @@ def get_dashboard_stats() -> dict:
         "SELECT stage, COUNT(*) as cnt FROM customers GROUP BY stage"
     ).fetchall()
     stage_dist = {r["stage"]: r["cnt"] for r in stage_rows}
+    
 
     # 热门推荐车型 Top5
     rec_rows = conn.execute(
@@ -429,4 +431,5 @@ def get_dashboard_stats() -> dict:
         "top_recommended_models": top_models,
         "customer_stage_dist": stage_dist,
         "daily_activity_14d": daily_activity,
+        "total_vehicles": total_vehicles,
     }

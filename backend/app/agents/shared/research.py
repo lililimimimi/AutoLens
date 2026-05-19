@@ -1,9 +1,8 @@
-
-
 import json
 from openai import OpenAI
 from app.config import settings
 from app.services.rag import search_knowledge
+from tavily import TavilyClient
 
 client = OpenAI(
     api_key=settings.SILICONFLOW_API_KEY,
@@ -30,6 +29,7 @@ async def research(
     enable_deep_search: bool = False,
     top_k: int = None,
 ) -> list[dict]:
+    print(f"  [Research] enable_deep_search={enable_deep_search}")
     """
     检索相关知识
     返回: [{"source": str, "content": str, "relevance": float}]
@@ -56,34 +56,35 @@ async def research(
 
 
 async def _deep_search(query: str) -> list[dict]:
-    """
-    调用 LLM 做联网知识补充
-    实际生产中可替换为真实搜索 API（如 Serper、Tavily）
-    """
+    """真实 Tavily 联网搜索"""
     try:
-        response = client.chat.completions.create(
-            model=settings.LLM_MODEL,
-            messages=[
-                {"role": "system", "content": DEEP_SEARCH_PROMPT},
-                {"role": "user", "content": f"请提供关于以下问题的最新信息：{query}"},
-            ],
-            max_tokens=800,
-            temperature=0.3,
+        print(f"  [Tavily] 开始搜索：{query}")
+        tavily = TavilyClient(api_key=settings.TAVILY_API_KEY)
+        
+        response = tavily.search(
+            query=query,
+            search_depth="basic",
+            max_results=5,
+            include_answer=True,
         )
-
-        content = response.choices[0].message.content.strip()
-        content = content.replace("```json", "").replace("```", "").strip()
-        data = json.loads(content)
-
-        results = data.get("results", [])
-        # 标记为联网来源
-        for r in results:
-            r["source"] = f"[联网] {r.get('source', '网络搜索')}"
-
+        
+        print(f"  [Tavily] 搜索结果数：{len(response.get('results', []))}")
+        for r in response.get("results", []):
+            print(f"    - {r.get('title')} | {r.get('url')}")
+        
+        results = []
+        for r in response.get("results", []):
+            results.append({
+                "source": f"[联网] {r.get('title', '网络搜索')}",
+                "content": r.get("content", ""),
+                "relevance": r.get("score", 0.7),
+                "url": r.get("url", ""),
+            })
+        
         return results
 
     except Exception as e:
-        print(f"[ResearchAgent DeepSearch Error] {e}")
+        print(f"[TavilySearch Error] {type(e).__name__}: {e}")
         return []
 
 

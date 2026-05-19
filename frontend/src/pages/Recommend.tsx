@@ -32,6 +32,7 @@ export default function Recommend() {
   const [evidence, setEvidence] = useState<RecommendEvidence[]>([]);
   const [scene, setScene] = useState("");
   const [createdAt, setCreatedAt] = useState("");
+  const [aiSummary, setAiSummary] = useState("");
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -55,6 +56,7 @@ export default function Recommend() {
       setEvidence(res.evidence || []);
       setScene((res as any).scene || "");
       setCreatedAt(res.created_at);
+      setAiSummary(res.ai_summary ?? "");
     } catch (e) {
       setCurrentStep(-1);
       setReportMd("推荐生成失败，请稍后重试。");
@@ -106,7 +108,7 @@ export default function Recommend() {
         >
           <AgentChain currentStep={currentStep} />
           <div style={{ flex: 1, minHeight: 300 }}>
-            <RecommendRadarChart results={results} />
+            <RecommendRadarChart results={results} aiSummary={aiSummary} />
           </div>
         </div>
       </div>
