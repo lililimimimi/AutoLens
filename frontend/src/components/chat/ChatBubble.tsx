@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage } from "../../types";
 
 const GREEN = "#5a7a5a";
+const GREEN_DARK = "#3d5a3d";
 
 interface ChatBubbleProps {
   message: ChatMessage;
@@ -17,22 +18,23 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         display: "flex",
         flexDirection: isUser ? "row-reverse" : "row",
         alignItems: "flex-start",
-        gap: 12,
+        gap: 10,
         marginBottom: 20,
+        marginLeft: isUser ? "20%" : 0,
       }}
     >
       {/* 头像 */}
       <div
         style={{
-          width: 38,
-          height: 38,
-          borderRadius: 19,
+          width: 34,
+          height: 34,
+          borderRadius: 17,
           flexShrink: 0,
           background: isUser ? "#e8e8e4" : GREEN,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 16,
+          fontSize: 13,
           fontWeight: 700,
           color: isUser ? "#666" : "#fff",
         }}
@@ -43,14 +45,14 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
       {/* 气泡 */}
       <div
         style={{
-          maxWidth: "75%",
-          background: isUser ? GREEN : "#e8ede8",
-          color: isUser ? "#fff" : "#1a1a1a",
-          borderRadius: isUser ? "12px 2px 12px 12px" : "2px 12px 12px 12px",
-          padding: "14px 18px",
-          fontSize: 18,
+          maxWidth: "80%",
+          background: isUser ? GREEN_DARK : "#f5f5f0",
+          color: isUser ? "#fff" : "#2d2d2d",
+          borderRadius: "12px 12px 12px 12px",
+          padding: "14px 16px",
+          fontSize: 14,
           lineHeight: 1.7,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
         }}
       >
         {isUser ? (
@@ -61,9 +63,9 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               h2: ({ children }) => (
                 <h2
                   style={{
-                    fontSize: 20,
+                    fontSize: 15,
                     fontWeight: 700,
-                    margin: "16px 0 8px",
+                    margin: "12px 0 6px",
                     color: "#2d2d2d",
                   }}
                 >
@@ -73,9 +75,9 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               h3: ({ children }) => (
                 <h3
                   style={{
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: 600,
-                    margin: "12px 0 6px",
+                    margin: "10px 10px 4px",
                     color: "#2d2d2d",
                   }}
                 >
@@ -83,20 +85,26 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                 </h3>
               ),
               p: ({ children }) => (
-                <p style={{ margin: "6px 0", fontSize: 18 }}>{children}</p>
+                <p style={{ margin: "10px 10px 4px", fontSize: 14 }}>
+                  {children}
+                </p>
               ),
               li: ({ children }) => (
-                <li style={{ margin: "4px 0", fontSize: 18 }}>{children}</li>
+                <li style={{ margin: "10px 10px 4px", fontSize: 14 }}>
+                  {children}
+                </li>
               ),
               strong: ({ children }) => (
-                <strong style={{ fontWeight: 600 }}>{children}</strong>
+                <strong style={{ fontWeight: 600, color: GREEN_DARK }}>
+                  {children}
+                </strong>
               ),
               hr: () => (
                 <hr
                   style={{
                     border: "none",
                     borderTop: "1px solid #e8e8e4",
-                    margin: "12px 0",
+                    margin: "10px 10px 4px",
                   }}
                 />
               ),
@@ -111,8 +119,8 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           style={{
             fontSize: 11,
             color: isUser ? "rgba(255,255,255,0.6)" : "#bbb",
-            marginTop: 6,
-            textAlign: isUser ? "left" : "right",
+            marginTop: 4,
+            textAlign: "right",
           }}
         >
           {new Date(message.created_at).toLocaleTimeString("zh-CN", {

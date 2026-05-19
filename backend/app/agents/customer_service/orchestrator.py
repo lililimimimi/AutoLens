@@ -22,6 +22,7 @@ CHAT_SYSTEM_PROMPT = """你是 AutoLens 智能客服，专注于新能源汽车�
 3. 引用知识库证据时注明来源
 4. 不确定的内容不要编造
 5. 语气亲切自然
+6. 推荐车型时必须包含价格区间（万元）
 
 历史对话：
 {history}
@@ -60,7 +61,11 @@ async def run_chat_pipeline(
         
 
         # 检查画像是否足够完整
-        has_enough = profile.get("budget_max") or profile.get("budget_min")
+        has_enough = (
+    profile.get("budget_max") or
+    profile.get("budget_min") or
+    profile.get("family_size")
+)
 
         if not profile or not has_enough:
             # 提取用户提到的品牌或关键词
@@ -73,12 +78,12 @@ async def run_chat_pipeline(
             
             answer = f"""您好！{brand_hint}为了给您推荐最合适的车型，还需要了解：
 
-        - **预算范围**是多少万？
-        - **家庭人数**是几口人？
-        - **通勤距离**大概多远？
-        - **是否有家充**条件？
+        - 预算范围是多少万？
+        - 家庭人数是几口人？
+        - 通勤距离大概多远？
+        - 是否有家充条件？
 
-        或者您可以前往**智能推荐**页面填写表单，获得更精准的推荐结果。"""
+        或者您可以前往智能推荐页面填写表单，获得更精准的推荐结果。"""
             answer = await reflect_and_get_content(answer)
             save_message(session_id, "assistant", answer, customer_id)
             return {

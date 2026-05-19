@@ -94,7 +94,12 @@ export default function CustomerService() {
       />
 
       <div
-        style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20,height: "calc(100vh - 250px)" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.4fr 1fr",
+          gap: 20,
+          height: "calc(100vh - 250px)",
+        }}
       >
         {/* 左：对话区域 */}
         <div
@@ -104,6 +109,9 @@ export default function CustomerService() {
             display: "flex",
             flexDirection: "column",
             minHeight: 600,
+            border: "1.5px solid #e8ede8",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+            overflow: "hidden",
           }}
         >
           {/* 顶部标题栏 */}
@@ -150,7 +158,7 @@ export default function CustomerService() {
           </div>
 
           {/* 消息列表 */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
             {messages.map((msg, i) => (
               <ChatBubble key={i} message={msg} />
             ))}
@@ -182,7 +190,7 @@ export default function CustomerService() {
                 <div
                   style={{
                     background: "#f5f5f0",
-                    borderRadius: "2px 12px 12px 12px",
+                    borderRadius: "12px 12px 12px 12px",
                     padding: "14px 18px",
                     fontSize: 18,
                     color: "#999",
@@ -206,7 +214,6 @@ export default function CustomerService() {
           />
         </div>
 
-        {/* 右：Agent链路 + 证据 */}
         {/* 右：Agent链路 + 证据 */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <ChatAgentChain currentStep={currentStep} />
