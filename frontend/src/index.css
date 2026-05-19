@@ -6,7 +6,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   color: #2d2d2d;
   background: #f5f5f0;
 }
@@ -56,5 +56,72 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range']::-webkit-slider-runnable-track {
   background: transparent;
   height: 4px;
+}
+
+.markdown-report h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d2d2d;
+  margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid #e8ede8;
+}
+
+.markdown-report h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3d5a3d;
+  margin: 14px 0 6px;
+}
+
+.markdown-report table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.markdown-report th {
+  background: #f5f5f0;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #3d5a3d;
+  border: 1px solid #e8ede8;
+}
+
+.markdown-report td {
+  padding: 8px 12px;
+  border: 1px solid #e8ede8;
+  color: #555;
+}
+
+.markdown-report tr:nth-child(even) td {
+  background: #fafaf8;
+}
+
+.markdown-report ul {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+
+.markdown-report li {
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.markdown-report strong {
+  color: #2d2d2d;
+  font-weight: 600;
+}
+
+.markdown-report blockquote {
+  border-left: 3px solid #5a7a5a;
+  padding: 8px 14px;
+  margin: 10px 0;
+  background: #f5f5f0;
+  border-radius: 0 8px 8px 0;
+  color: #666;
+  font-size: 13px;
 }
 

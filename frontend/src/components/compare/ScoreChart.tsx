@@ -65,7 +65,7 @@ export default function ScoreChart({ vehicles }: { vehicles: any[] }) {
               fillOpacity={0.2}
             />
           ))}
-          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Legend wrapperStyle={{ fontSize: 14 }} />
         </RadarChart>
       </ResponsiveContainer>
     </div>

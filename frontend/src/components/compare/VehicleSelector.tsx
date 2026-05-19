@@ -1,11 +1,10 @@
 // components/compare/VehicleSelector.tsx
 import { useState } from "react";
 import SelectedCards from "./SelectedCards";
-import QuickFilters from "./QuickFilters";
 import AddVehicleModal from "./AddVehicleModal";
 
 const GREEN_DARK = "#3d5a3d";
-const MAX = 5;
+const MAX = 3;
 
 export interface CompareVehicle {
   id: number;
@@ -47,7 +46,6 @@ export default function VehicleSelector({
   onCompare,
 }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [quickFilter, setQuickFilter] = useState("全部");
 
   const handleAdd = (v: any) => {
     onAdd(v);
@@ -87,23 +85,10 @@ export default function VehicleSelector({
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button
-            style={{
-              padding: "7px 16px",
-              borderRadius: 8,
-              fontSize: 14,
-              border: "1.5px solid #e0e0d8",
-              background: "#fff",
-              color: "#666",
-              cursor: "pointer",
-            }}
-          >
-            导出 CSV
-          </button>
-          <button
             onClick={onCompare}
             disabled={selected.length < 2}
             style={{
-              padding: "7px 16px",
+              padding: "9px 20px",
               borderRadius: 8,
               fontSize: 14,
               border: "none",
@@ -123,13 +108,12 @@ export default function VehicleSelector({
         onRemove={onRemove}
         onOpenModal={() => setModalOpen(true)}
       />
-      <QuickFilters active={quickFilter} onChange={(f) => setQuickFilter(f)} />
+      
 
       {modalOpen && (
         <AddVehicleModal
           vehicles={allVehicles}
           selectedIds={selected.map((v) => v.id)}
-          quickFilter={quickFilter}
           onAdd={handleAdd}
           onClose={() => setModalOpen(false)}
         />

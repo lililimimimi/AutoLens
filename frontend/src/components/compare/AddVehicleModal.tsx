@@ -18,7 +18,6 @@ const energyColor = (e: string) => {
 interface Props {
   vehicles: any[];
   selectedIds: number[];
-  quickFilter: string;
   onAdd: (v: any) => void;
   onClose: () => void;
 }
@@ -26,7 +25,6 @@ interface Props {
 export default function AddVehicleModal({
   vehicles,
   selectedIds,
-  quickFilter,
   onAdd,
   onClose,
 }: Props) {
@@ -40,19 +38,7 @@ export default function AddVehicleModal({
     const matchSearch =
       !search || v.brand.includes(search) || v.model.includes(search);
     const matchBody = bodyFilter === "全部" || v.body_type === bodyFilter;
-    const matchQuick = (() => {
-      if (quickFilter === "全部") return true;
-      if (quickFilter === "纯电 SUV")
-        return v.energy_type === "纯电" && v.body_type === "SUV";
-      if (quickFilter === "插混/增程")
-        return v.energy_type === "插混" || v.energy_type === "增程";
-      if (quickFilter === "20万以内") return v.price_min < 20;
-      if (quickFilter === "20-30万")
-        return v.price_min >= 20 && v.price_min <= 30;
-      if (quickFilter === "30万以上") return v.price_min > 30;
-      return true;
-    })();
-    return matchSearch && matchBody && matchQuick;
+    return matchSearch && matchBody;
   });
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);

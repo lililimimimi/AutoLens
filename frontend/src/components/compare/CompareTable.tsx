@@ -20,7 +20,7 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
   if (vehicles.length === 0) return null;
 
   // 找最优值
-  const bestScore = Math.max(...vehicles.map((v) => v.score));
+  const bestScore = Math.max(...vehicles.map((v) => v.safety_score ?? 0));
   const bestRange = Math.max(...vehicles.map((v) => v.range_km));
   const bestPrice = Math.min(...vehicles.map((v) => v.price_min));
 
@@ -151,10 +151,11 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
                     style={{
                       fontWeight: 700,
                       fontSize: 15,
-                      color: v.score === bestScore ? GREEN_DARK : "#2d2d2d",
+                      color:
+                        v.safety_score === bestScore ? GREEN_DARK : "#2d2d2d",
                     }}
                   >
-                    {v.score}
+                    {v.safety_score ?? "-"}
                   </span>
                   {v.score === bestScore && (
                     <span style={{ fontSize: 11, color: GREEN, marginLeft: 4 }}>
@@ -219,8 +220,27 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
                     style={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
                     {(v.highlights || []).map((h: string, i: number) => (
-                      <span key={i} style={{ fontSize: 12, color: "#555" }}>
-                        · {h}
+                      <span
+                        key={i}
+                        style={{
+                          fontSize: 12,
+                          color: "#555",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 5,
+                            height: 5,
+                            borderRadius: "50%",
+                            background: "#5a7a5a",
+                            flexShrink: 0,
+                            display: "inline-block",
+                          }}
+                        />
+                        {h}
                       </span>
                     ))}
                   </div>
@@ -231,11 +251,33 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
                   <div
                     style={{ display: "flex", flexDirection: "column", gap: 2 }}
                   >
-                    {(v.highlights || []).length === 0 && (
-                      <span style={{ fontSize: 12, color: "#bbb" }}>
-                        暂无数据
+                    {(typeof v.weaknesses === "string"
+                      ? JSON.parse(v.weaknesses)
+                      : v.weaknesses || []
+                    ).map((w: string, i: number) => (
+                      <span
+                        key={i}
+                        style={{
+                          fontSize: 12,
+                          color: "#888",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 5,
+                            height: 5,
+                            borderRadius: "50%",
+                            background: "#e07070",
+                            flexShrink: 0,
+                            display: "inline-block",
+                          }}
+                        />
+                        {w}
                       </span>
-                    )}
+                    ))}
                   </div>
                 </td>
               </tr>

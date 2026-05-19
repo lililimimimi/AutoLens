@@ -62,6 +62,7 @@ export default function PriceRangeChart({ vehicles }: PriceRangeChartProps) {
             name="起售价"
             unit="万"
             tick={{ fontSize: 12 }}
+            domain={[5, "auto"]}
           >
             <Label
               value="起售价（万元）"
@@ -76,6 +77,7 @@ export default function PriceRangeChart({ vehicles }: PriceRangeChartProps) {
             name="续航"
             unit="km"
             tick={{ fontSize: 12 }}
+            domain={[300, "auto"]}
           />
           <Tooltip
             cursor={{ strokeDasharray: "3 3" }}
@@ -112,6 +114,33 @@ export default function PriceRangeChart({ vehicles }: PriceRangeChartProps) {
           ))}
         </ScatterChart>
       </ResponsiveContainer>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 20,
+          marginTop: 8,
+        }}
+      >
+        {vehicles.map((v, i) => (
+          <div
+            key={v.id}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
+          >
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: "50%",
+                background: COLORS[i % COLORS.length],
+              }}
+            />
+            <span style={{ fontSize: 14, color: "#666" }}>
+              {v.brand} {v.model}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

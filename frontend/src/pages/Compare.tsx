@@ -1,49 +1,89 @@
-// AutoLens — pages/Compare.tsx
-import { useState } from "react";
+// pages/Compare.tsx
+import { useState, useEffect } from "react";
 import PageHeader from "../components/PageHeader";
 import VehicleSelector, {
   type CompareVehicle,
 } from "../components/compare/VehicleSelector";
-import ScoreChart from "../components/compare/ScoreChart";
-import PriceRangeChart from "../components/compare/PriceRangeChart";
-import AbilityChart from "../components/compare/AbilityChart";
 import CompareTable from "../components/compare/CompareTable";
-import { getVehicles } from "../api/client";
-import { useEffect } from "react";
+import CompareSummary from "../components/compare/CompareSummary";
+import CompareBuyingAdvice from "../components/compare/CompareBuyingAdvice";
+import CompareCharts from "../components/compare/CompareCharts";
+import { compare, getVehicles } from "../api/client";
 
 export default function Compare() {
   const [selected, setSelected] = useState<any[]>([]);
-
-  const [compared, setCompared] = useState(true);
-
   const [allVehicles, setAllVehicles] = useState<any[]>([]);
+  const [compared, setCompared] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [reportData, setReportData] = useState<any | null>(null);
+  const [analyses, setAnalyses] = useState<any[]>([]);
+  const [buyingAdvice, setBuyingAdvice] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("图表分析");
+  const [reportLoading, setReportLoading] = useState(false);
 
   useEffect(() => {
     getVehicles().then(setAllVehicles).catch(console.error);
   }, []);
 
   const handleAdd = (v: CompareVehicle) => {
-    if (selected.length < 4) setSelected((prev) => [...prev, v]);
+    if (selected.length < 3) setSelected((prev) => [...prev, v]);
   };
 
   const handleRemove = (id: number) => {
     setSelected((prev) => prev.filter((v) => v.id !== id));
-    if (selected.length <= 2) setCompared(false);
+    setCompared(false);
+    setReportData(null);
+    setAnalyses([]);
+    setBuyingAdvice([]);
   };
 
-  const handleCompare = () => setCompared(true);
+  const handleCompare = async () => {
+    if (selected.length < 2) return;
+    setLoading(true);
+    try {
+      const res = await compare({ vehicle_ids: selected.map((v) => v.id) });
+      setAnalyses(res.analyses);
+      setBuyingAdvice(res.buying_advice);
+      setCompared(true);
+    } catch (e) {
+      console.error("对比生成失败", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateReport = async () => {
+    setReportLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL || "http://localhost:8003"}/api/compare/report`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vehicle_ids: selected.map((v) => v.id) }),
+        },
+      );
+      const data = await res.json();
+      setReportData(data);
+      setActiveTab("完整报告");
+    } catch (e) {
+      console.error("报告生成失败", e);
+    } finally {
+      setReportLoading(false);
+    }
+  };
 
   return (
     <div style={{ width: "100%" }}>
       <PageHeader
-        tags="MULTI-AGENT · RAG · DEEPSEARCH · SKILLS · SQLITE"
+        tags="MULTI-AGENT · RAG · SQLITE"
         title="竞品对比"
         description="围绕价格、续航、空间、智驾、补能和场景做竞品对比。"
-        actionLabel="一键生成报告"
-        onAction={handleCompare}
+        actionLabel={reportLoading ? "生成中..." : "一键生成报告"}
+        onAction={handleGenerateReport}
+        disabled={!compared || reportLoading}
       />
 
-      {/* 选车区域 */}
       <VehicleSelector
         allVehicles={allVehicles}
         selected={selected}
@@ -52,34 +92,38 @@ export default function Compare() {
         onCompare={handleCompare}
       />
 
-      {/* 图表区域 */}
       {compared && selected.length >= 2 && (
         <>
-          {/* 第一行：综合评分 + 价格续航 */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 20,
-              marginBottom: 20,
-            }}
-          >
-            <ScoreChart vehicles={selected} />
-            <PriceRangeChart vehicles={selected} />
-          </div>
-
-          {/* 第二行：分项能力 */}
-          <div style={{ marginBottom: 20 }}>
-            <AbilityChart vehicles={selected} />
-          </div>
-
-          {/* 第三行：详细对比表格 */}
           <CompareTable vehicles={selected} />
+
+          {(analyses.length > 0 || buyingAdvice.length > 0) && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 20,
+                marginTop: 20,
+              }}
+            >
+              <CompareSummary analyses={analyses} selected={selected} />
+              <CompareBuyingAdvice
+                buyingAdvice={buyingAdvice}
+                reportLoading={reportLoading}
+                onGenerateReport={handleGenerateReport}
+              />
+            </div>
+          )}
+
+          <CompareCharts
+            vehicles={selected}
+            reportData={reportData}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
         </>
       )}
 
-      {/* 未对比提示 */}
-      {!compared && (
+      {!compared && !loading && (
         <div
           style={{
             background: "#fff",
@@ -91,6 +135,21 @@ export default function Compare() {
           }}
         >
           请选择至少 2 辆车型，点击「生成对比」
+        </div>
+      )}
+
+      {loading && (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 12,
+            padding: "60px 0",
+            textAlign: "center",
+            color: "#999",
+            fontSize: 15,
+          }}
+        >
+          Agent 分析中，请稍候...
         </div>
       )}
     </div>

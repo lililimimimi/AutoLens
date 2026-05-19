@@ -169,21 +169,25 @@ export interface CompareRequest {
   enable_web_search?: boolean;
 }
 
-export interface CompareItem {
-  vehicle: Vehicle;
-  price_range: string;
-  range_display: string;
-  autopilot: string;
-  space_rating: "小" | "中" | "大" | "超大";
-  charge_speed: string;
-  value_rating: "一般" | "较高" | "很高";
-  pros: string[];
-  cons: string[];
+
+export interface CompareAnalysis {
+  vehicle_id: number;
+  verdict: string;
+  suitable_for: string;
+}
+
+export interface CompareBuyingAdvice {
+  scenario: string;
+  recommendation: string;
+  reason: string;
 }
 
 export interface CompareResponse {
-  items: CompareItem[];
-  recommendation?: string;
+  session_id: string;
+  vehicle_ids: number[];
+  summary: string;
+  analyses: CompareAnalysis[];
+  buying_advice: CompareBuyingAdvice[];
   report_md: string;
   created_at: string;
 }

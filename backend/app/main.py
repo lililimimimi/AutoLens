@@ -152,7 +152,7 @@ def dashboard():
 
 
 # ─────────────────────────────────────────
-# 推荐 / 客服（占位，后续 Agent 接入）
+# 推荐 / 客服
 # ─────────────────────────────────────────
 
 class RecommendRequestBody(BaseModel):
@@ -198,6 +198,19 @@ async def chat(body: ChatRequestBody):
 
 
 @app.post("/api/compare", tags=["对比"])
-def compare(body: dict):
-    # TODO: 接入竞品对比
-    return {"message": "对比接口开发中"}
+async def compare_vehicles(body: dict):
+    vehicle_ids = body.get("vehicle_ids", [])
+    if len(vehicle_ids) < 2:
+        raise HTTPException(status_code=400, detail="至少需要2辆车型")
+    
+    from app.agents.compare.orchestrator import run_compare_pipeline
+    return await run_compare_pipeline(vehicle_ids)
+
+
+@app.post("/api/compare/report", tags=["对比"])
+async def compare_report(body: dict):
+    vehicle_ids = body.get("vehicle_ids", [])
+    if len(vehicle_ids) < 2:
+        raise HTTPException(status_code=400, detail="至少需要2辆车型")
+    from app.agents.compare.orchestrator import run_report_pipeline
+    return await run_report_pipeline(vehicle_ids)

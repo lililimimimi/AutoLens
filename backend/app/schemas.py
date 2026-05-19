@@ -96,6 +96,8 @@ class VehicleBase(BaseModel):
     charge_time_dc:  Optional[float]= Field(None, description="快充至80%时间（min）")
     highlights:      List[str]      = Field(default_factory=list, description="卖点标签")
     image_url:       Optional[str]  = Field(None, description="车型图片URL")
+    weaknesses: List[str] = Field(default_factory=list, description="短板")
+    safety_score: Optional[float] = Field(None, description="安全评分")
 
 
 class VehicleCreate(VehicleBase):

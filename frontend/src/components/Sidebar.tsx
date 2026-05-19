@@ -26,18 +26,19 @@ export default function Sidebar() {
   return (
     <aside
       style={{
-        width: "22%",
-        minWidth: 180,
-        maxWidth: 240,
+        width: 220,
         minHeight: "100vh",
+        height: "100vh",
         background: "#fff",
         borderRight: "1px solid #e8e8e4",
         display: "flex",
         flexDirection: "column",
         padding: "24px 0",
-        position: "relative",
+        position: "fixed",
         top: 0,
         left: 0,
+        zIndex: 100,
+        overflowY: "auto",
       }}
     >
       {/* Logo */}

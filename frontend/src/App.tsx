@@ -21,6 +21,7 @@ export default function App() {
             minWidth: 0,
             padding: "32px 40px",
             boxSizing: "border-box",
+            marginLeft: 220,
           }}
         >
           <Routes>

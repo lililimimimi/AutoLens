@@ -1,10 +1,11 @@
-// AutoLens — components/PageHeader.tsx
+
 interface PageHeaderProps {
   tags?: string;
   title: string;
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  disabled?: boolean;
 }
 
 export default function PageHeader({
@@ -13,6 +14,7 @@ export default function PageHeader({
   description,
   actionLabel,
   onAction,
+  disabled,
 }: PageHeaderProps) {
   return (
     <div
@@ -56,14 +58,15 @@ export default function PageHeader({
       {actionLabel && (
         <button
           onClick={onAction}
+          disabled={disabled}
           style={{
-            background: "#fff",
-            color: "#3d5a3d",
+            background: disabled ? "rgba(255,255,255,0.4)" : "#fff",
+            color: disabled ? "rgba(61,90,61,0.5)" : "#3d5a3d",
             border: "none",
             borderRadius: 8,
             padding: "10px 20px",
             fontSize: 18,
-            cursor: "pointer",
+            cursor: disabled ? "not-allowed" : "pointer",
             fontWeight: 500,
             whiteSpace: "nowrap",
           }}
