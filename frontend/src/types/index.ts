@@ -14,7 +14,19 @@ export type FocusPoint =
   | "保值";
 export type CommuteDistance = "50km以内" | "50-100km" | "100km以上";
 export type ChargingAvailable = "有" | "无" | "不确定";
-export type RecommendScene = "豪华社交" | "家庭通勤" | "通用";
+export type RecommendScene =
+  | "豪华社交"
+  | "家庭通勤"
+  | "通用"
+  | "家庭旗舰"
+  | "商务豪华"
+  | "家庭长途"
+  | "长途补能"
+  | "科技智驾"
+  | "经济代步"
+  | "无家充通勤"
+  | "城市代步"
+  | "品质通勤";
 export type RouterIntent = "推荐" | "对比" | "销售" | "知识";
 export type CustomerStage =
   | "新线索"

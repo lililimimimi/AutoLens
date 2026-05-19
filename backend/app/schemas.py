@@ -53,9 +53,18 @@ class ChargingAvailable(str, Enum):
 
 class RecommendScene(str, Enum):
     """推荐场景"""
-    LUXURY    = "豪华社交"
-    FAMILY    = "家庭通勤"
-    GENERAL   = "通用"
+    LUXURY          = "豪华社交"
+    FAMILY          = "家庭通勤"
+    GENERAL         = "通用"
+    FAMILY_FLAGSHIP = "家庭旗舰"
+    BUSINESS_LUXURY = "商务豪华"
+    FAMILY_LONGTRIP = "家庭长途"
+    LONG_TRIP       = "长途补能"
+    TECH_DRIVE      = "科技智驾"
+    ECONOMY         = "经济代步"
+    NO_CHARGER      = "无家充通勤"
+    CITY_COMMUTE    = "城市代步"
+    QUALITY_COMMUTE = "品质通勤"
 
 
 class RouterIntent(str, Enum):
