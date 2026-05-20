@@ -24,6 +24,7 @@ export default function VehicleTable({
 }: VehicleTableProps) {
   return (
     <div
+      className="vehicle-table-card table-scroll-card"
       style={{
         background: "#fff",
         borderRadius: 12,
@@ -32,9 +33,10 @@ export default function VehicleTable({
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}
     >
-      <table
-        style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}
-      >
+      <div className="table-scroll-inner">
+        <table
+          style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}
+        >
         <thead>
           <tr
             style={{
@@ -170,7 +172,8 @@ export default function VehicleTable({
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
       {vehicles.length === 0 && (
         <div
           style={{

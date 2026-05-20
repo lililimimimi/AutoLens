@@ -32,7 +32,6 @@ const focusPoints: FocusPoint[] = [
   "安全",
   "性价比",
   "补能",
-  "保值",
 ];
 
 function FormRow({
@@ -46,6 +45,7 @@ function FormRow({
 }) {
   return (
     <div
+      className="recommend-form-row"
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -57,6 +57,7 @@ function FormRow({
       }}
     >
       <div
+        className="recommend-form-label"
         style={{
           display: "flex",
           alignItems: "center",
@@ -71,7 +72,10 @@ function FormRow({
           {label}
         </span>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, flex: 1 }}>
+      <div
+        className="recommend-form-control"
+        style={{ display: "flex", flexWrap: "wrap", gap: 8, flex: 1, minWidth: 0 }}
+      >
         {children}
       </div>
     </div>
@@ -99,9 +103,15 @@ export default function RecommendForm({
   loading,
   onSubmit,
 }: RecommendFormProps) {
-  const toggleList = <T extends string>(list: T[] | undefined, val: T): T[] => {
+  const toggleList = <T extends string>(
+    list: T[] | undefined,
+    val: T,
+    max?: number,
+  ): T[] => {
     const arr = list || [];
-    return arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
+    if (arr.includes(val)) return arr.filter((v) => v !== val);
+    if (max && arr.length >= max) return arr;
+    return [...arr, val];
   };
 
   // 需求画像预览
@@ -132,14 +142,19 @@ export default function RecommendForm({
   ].filter(Boolean);
 
   return (
-    <div style={{ background: "#fff", borderRadius: 12, padding: "20px 24px" }}>
+    <div
+      className="recommend-form-card"
+      style={{ background: "#fff", borderRadius: 12, padding: "20px 24px", minWidth: 0 }}
+    >
       {/* 标题栏 */}
       <div
+        className="recommend-form-header"
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
           marginBottom: 16,
+          gap: 12,
         }}
       >
         <div>
@@ -161,6 +176,7 @@ export default function RecommendForm({
           </div>
         </div>
         <div
+          className="recommend-form-badge"
           style={{
             display: "flex",
             alignItems: "center",
@@ -296,19 +312,24 @@ export default function RecommendForm({
       </FormRow>
 
       <FormRow label="关注点（多选，最多4项）" icon={<Star size={15} />}>
-        {focusPoints.map((f) => (
-          <OptionBtn
-            key={f}
-            label={f}
-            selected={(profile.focus_points || []).includes(f)}
-            onClick={() =>
-              setProfile((p) => ({
-                ...p,
-                focus_points: toggleList(p.focus_points, f),
-              }))
-            }
-          />
-        ))}
+        {focusPoints.map((f) => {
+          const selected = (profile.focus_points || []).includes(f);
+          const maxReached = (profile.focus_points?.length || 0) >= 4;
+          return (
+            <OptionBtn
+              key={f}
+              label={f}
+              selected={selected}
+              disabled={!selected && maxReached}
+              onClick={() =>
+                setProfile((p) => ({
+                  ...p,
+                  focus_points: toggleList(p.focus_points, f, 4),
+                }))
+              }
+            />
+          );
+        })}
         {(profile.focus_points?.length || 0) > 0 && (
           <div
             style={{ width: "100%", fontSize: 11, color: "#999", marginTop: 2 }}
@@ -367,6 +388,7 @@ export default function RecommendForm({
       {/* 需求画像预览 */}
       {profileTags.length > 0 && (
         <div
+          className="recommend-profile-tags"
           style={{
             margin: "12px 0",
             padding: "10px 14px",
@@ -427,6 +449,7 @@ export default function RecommendForm({
       {/* 步骤说明 */}
       {!loading && (
         <div
+          className="recommend-step-list"
           style={{
             display: "flex",
             justifyContent: "center",

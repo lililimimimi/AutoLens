@@ -86,7 +86,7 @@ export default function CustomerService() {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="chat-page responsive-page" style={{ width: "100%" }}>
       <PageHeader
         tags="MULTI-AGENT · RAG · MEMORY · SQLITE"
         title="智能客服"
@@ -94,6 +94,7 @@ export default function CustomerService() {
       />
 
       <div
+        className="chat-layout-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1.4fr 1fr",
@@ -103,6 +104,7 @@ export default function CustomerService() {
       >
         {/* 左：对话区域 */}
         <div
+          className="chat-main-panel"
           style={{
             background: "#fff",
             borderRadius: 12,
@@ -116,6 +118,7 @@ export default function CustomerService() {
         >
           {/* 顶部标题栏 */}
           <div
+            className="chat-panel-header"
             style={{
               padding: "16px 20px",
               borderBottom: "1px solid #e8e8e4",
@@ -158,7 +161,10 @@ export default function CustomerService() {
           </div>
 
           {/* 消息列表 */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}>
+          <div
+            className="chat-message-list"
+            style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}
+          >
             {messages.map((msg, i) => (
               <ChatBubble key={i} message={msg} />
             ))}
@@ -215,7 +221,7 @@ export default function CustomerService() {
         </div>
 
         {/* 右：Agent链路 + 证据 */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="chat-side-panel" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <ChatAgentChain currentStep={currentStep} />
           {/* 证据区域，始终显示 */}
           <div

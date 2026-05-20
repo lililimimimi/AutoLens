@@ -54,6 +54,7 @@ export default function VehicleSelector({
 
   return (
     <div
+      className="compare-selector-card"
       style={{
         background: "#fff",
         borderRadius: 12,
@@ -65,6 +66,7 @@ export default function VehicleSelector({
     >
       {/* 顶部 */}
       <div
+        className="compare-selector-header"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -83,7 +85,7 @@ export default function VehicleSelector({
             款
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="compare-selector-actions" style={{ display: "flex", gap: 10 }}>
           <button
             onClick={onCompare}
             disabled={selected.length < 2}

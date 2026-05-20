@@ -39,7 +39,7 @@ export default function CustomerManagement() {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="customer-page responsive-page" style={{ width: "100%" }}>
       <PageHeader
         tags="CRM · 线索管理 · 推荐历史 · 对话历史"
         title="客户管理"
@@ -49,6 +49,7 @@ export default function CustomerManagement() {
       />
 
       <div
+        className="customer-management-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1.4fr",
@@ -100,4 +101,3 @@ export default function CustomerManagement() {
     </div>
   )
 }
-

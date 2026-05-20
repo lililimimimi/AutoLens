@@ -23,9 +23,13 @@ export default function CompareCharts({
   const [activeChart, setActiveChart] = useState("能力雷达");
 
   return (
-    <div style={{ background: "#fff", borderRadius: 12, marginTop: 20 }}>
+    <div
+      className="compare-charts-card"
+      style={{ background: "#fff", borderRadius: 12, marginTop: 20, minWidth: 0 }}
+    >
       {/* Tab 切换 */}
       <div
+        className="compare-tabs"
         style={{
           display: "flex",
           borderBottom: "1.5px solid #f0f0ec",
@@ -56,10 +60,13 @@ export default function CompareCharts({
         ))}
       </div>
 
-      <div style={{ padding: "20px 24px" }}>
+      <div className="compare-charts-body" style={{ padding: "20px 24px", minWidth: 0 }}>
         {activeTab === "图表分析" && (
           <>
-            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            <div
+              className="compare-chart-tabs"
+              style={{ display: "flex", gap: 8, marginBottom: 20 }}
+            >
               {["能力雷达", "价格·续航对比", "分项能力对比"].map((t) => (
                 <button
                   key={t}
@@ -103,10 +110,6 @@ export default function CompareCharts({
           >
             <CompareReport reportData={reportData} vehicles={vehicles} />
           </div>
-        )}
-
-        {activeTab === "完整报告" && (
-          <CompareReport reportData={reportData} vehicles={vehicles} />
         )}
       </div>
     </div>

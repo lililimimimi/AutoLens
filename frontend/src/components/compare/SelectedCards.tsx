@@ -24,9 +24,13 @@ export default function SelectedCards({
   onOpenModal,
 }: Props) {
   return (
-    <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+    <div
+      className="compare-selected-cards"
+      style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}
+    >
       {selected.map((v) => (
         <div
+          className="compare-selected-card"
           key={v.id}
           style={{
             border: "1.5px solid #e0e8e0",
@@ -106,6 +110,7 @@ export default function SelectedCards({
 
       {selected.length < MAX && (
         <div
+          className="compare-add-card"
           onClick={onOpenModal}
           style={{
             border: "1.5px dashed #d0d8d0",

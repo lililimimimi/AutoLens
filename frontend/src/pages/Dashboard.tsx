@@ -55,7 +55,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="dashboard-page responsive-page" style={{ width: "100%" }}>
       <PageHeader
         tags="MULTI-AGENT · RAG · DEEPSEARCH · SQLITE"
         title="数据总览"
@@ -65,7 +65,10 @@ export default function Dashboard() {
       />
 
       {/* 统计卡片 */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+      <div
+        className="dashboard-stat-grid"
+        style={{ display: "flex", gap: 16, marginBottom: 24 }}
+      >
         <StatCard
           icon={<Users size={18} color="#5a7a5a" />}
           label="客户总数"
@@ -94,6 +97,7 @@ export default function Dashboard() {
 
       {/* 图表第一行 */}
       <div
+        className="dashboard-chart-grid-3"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
@@ -107,7 +111,10 @@ export default function Dashboard() {
       </div>
 
       {/* 图表第二行 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div
+        className="dashboard-chart-grid-2"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+      >
         <TopModelsChart data={stats.top_recommended_models} />
         <ActivityLineChart data={stats.daily_activity_14d} />
       </div>

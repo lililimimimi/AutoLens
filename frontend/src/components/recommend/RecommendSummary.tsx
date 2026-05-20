@@ -1,14 +1,16 @@
 import type { UserProfile, RecommendEvidence } from "../../types";
 import { FileText, Star, User, Search } from "lucide-react";
 
-const GREEN = "#5a7a5a";
-const GREEN_DARK = "#3d5a3d";
+const ACCENT = "#5a7a5a";
+const WARM = "#d9822b";
+const MUTED = "#6f7f8f";
 
 interface RecommendSummaryProps {
   reportMd: string;
   profile: UserProfile;
   evidence: RecommendEvidence[];
   scene: string;
+  sceneReason?: string;
   createdAt?: string;
 }
 
@@ -17,6 +19,7 @@ export default function RecommendSummary({
   profile,
   evidence,
   scene,
+  sceneReason,
   createdAt,
 }: RecommendSummaryProps) {
   if (!reportMd) {
@@ -39,9 +42,15 @@ export default function RecommendSummary({
     );
   }
 
-  // 提取报告总结（第一段）
+  // 提取报告总结（优先取“整体推荐”段落）
   const lines = reportMd.split("\n").filter((l) => l.trim());
-  const summary = lines.find((l) => !l.startsWith("#") && l.length > 20) || "";
+  const summaryIndex = lines.findIndex((l) => l.trim() === "## 整体推荐");
+  const summary =
+    summaryIndex >= 0
+      ? lines
+          .slice(summaryIndex + 1)
+          .find((l) => !l.startsWith("#") && l.length > 20) || ""
+      : lines.find((l) => !l.startsWith("#") && l.length > 20) || "";
 
   // 推荐理由（bullet points）
   const reasons = lines
@@ -57,7 +66,10 @@ export default function RecommendSummary({
     );
 
   return (
-    <div style={{ background: "#fff", borderRadius: 12, padding: "24px" }}>
+    <div
+      className="recommend-summary-card"
+      style={{ background: "#fff", borderRadius: 12, padding: "24px", minWidth: 0 }}
+    >
       {/* 标题 */}
       <div
         style={{
@@ -65,10 +77,11 @@ export default function RecommendSummary({
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 20,
+          gap: 12,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <FileText size={18} color={GREEN} />
+          <FileText size={18} color={ACCENT} />
           <span style={{ fontSize: 18, fontWeight: 600, color: "#2d2d2d" }}>
             推荐报告
           </span>
@@ -96,20 +109,21 @@ export default function RecommendSummary({
             marginBottom: 10,
           }}
         >
-          <FileText size={16} color={GREEN} />
+          <FileText size={16} color={ACCENT} />
           <span style={{ fontSize: 14, fontWeight: 600, color: "#2d2d2d" }}>
             推荐结论
           </span>
         </div>
         <div
+          className="recommend-profile-grid"
           style={{
-            background: "#f5f5f0",
+            background: "#f5f7f2",
             borderRadius: 8,
             padding: "12px 14px",
             fontSize: 13,
             color: "#555",
             lineHeight: 1.7,
-            borderLeft: `3px solid ${GREEN}`,
+            borderLeft: `3px solid ${ACCENT}`,
           }}
         >
           {summary || "基于您的需求，已为您筛选出最匹配的车型。"}
@@ -127,7 +141,7 @@ export default function RecommendSummary({
               marginBottom: 10,
             }}
           >
-            <Star size={16} color={GREEN} />
+            <Star size={16} color={WARM} />
             <span style={{ fontSize: 14, fontWeight: 600, color: "#2d2d2d" }}>
               推荐理由
             </span>
@@ -149,7 +163,7 @@ export default function RecommendSummary({
                     width: 6,
                     height: 6,
                     borderRadius: 3,
-                    background: "#5a7a5a",
+                    background: WARM,
                     flexShrink: 0,
                     marginTop: 5,
                   }}
@@ -171,14 +185,14 @@ export default function RecommendSummary({
             marginBottom: 10,
           }}
         >
-          <User size={16} color={GREEN} />
+          <User size={16} color={MUTED} />
           <span style={{ fontSize: 14, fontWeight: 600, color: "#2d2d2d" }}>
             用户画像摘要
           </span>
         </div>
         <div
           style={{
-            background: "#f5f5f0",
+            background: "#fafafa",
             borderRadius: 8,
             padding: "12px 14px",
             display: "grid",
@@ -230,6 +244,22 @@ export default function RecommendSummary({
             </div>
           ))}
         </div>
+        {sceneReason && (
+          <div
+            style={{
+              marginTop: 10,
+              background: "#fff",
+              border: "1px solid #e2e8f0",
+              borderRadius: 8,
+              padding: "10px 12px",
+              fontSize: 12,
+              color: "#666",
+              lineHeight: 1.6,
+            }}
+          >
+            {sceneReason}
+          </div>
+        )}
       </div>
 
       {/* 证据来源 */}
@@ -243,7 +273,7 @@ export default function RecommendSummary({
               marginBottom: 10,
             }}
           >
-            <Search size={16} color={GREEN} />
+            <Search size={16} color={ACCENT} />
             <span style={{ fontSize: 14, fontWeight: 600, color: "#2d2d2d" }}>
               证据来源
             </span>
@@ -257,8 +287,8 @@ export default function RecommendSummary({
                   padding: "4px 12px",
                   borderRadius: 12,
                   background: "#f0f4f0",
-                  color: GREEN_DARK,
-                  border: `1px solid ${GREEN}`,
+                  color: ACCENT,
+                  border: "1px solid #c8d8c8",
                 }}
               >
                 {tag}
@@ -279,13 +309,13 @@ export default function RecommendSummary({
                 style={{
                   fontSize: 12,
                   color: "#888",
-                  background: "#f5f5f0",
+                  background: "#fafafa",
                   borderRadius: 6,
                   padding: "8px 12px",
                   lineHeight: 1.5,
                 }}
               >
-                <span style={{ color: GREEN, fontWeight: 500 }}>
+                <span style={{ color: ACCENT, fontWeight: 500 }}>
                   [{e.source}]
                 </span>{" "}
                 {e.content.slice(0, 60)}...

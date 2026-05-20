@@ -34,6 +34,7 @@ export default function VehicleFilter({
 }: VehicleFilterProps) {
   return (
     <div
+      className="vehicle-filter-bar"
       style={{
         background: "#fff",
         borderRadius: 12,
@@ -47,6 +48,7 @@ export default function VehicleFilter({
     >
       {/* 搜索框 */}
       <input
+        className="vehicle-filter-input"
         value={search}
         onChange={(e) => onSearch(e.target.value)}
         placeholder="搜索品牌或车型..."
@@ -60,7 +62,7 @@ export default function VehicleFilter({
         }}
       />
       {/* 能源筛选 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="vehicle-filter-group" style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span
           style={{
             fontSize: 14,
@@ -92,7 +94,7 @@ export default function VehicleFilter({
           <option value="增程">增程</option>
         </select>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <div className="vehicle-filter-group" style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span
           style={{
             fontSize: 14,
@@ -127,6 +129,7 @@ export default function VehicleFilter({
       </div>
       {/* 新增按钮 */}
       <button
+        className="vehicle-filter-add"
         onClick={onAdd}
         style={{
           marginLeft: "auto",

@@ -245,41 +245,75 @@ export default function CompareReport({ reportData, vehicles }: Props) {
           >
             选购建议
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 12,
+            }}
+          >
             {suggestions.map((s: any, i: number) => (
               <div
                 key={i}
                 style={{
-                  padding: "12px 16px",
+                  padding: "14px 16px",
                   border: "1.5px solid #e8ede8",
                   borderRadius: 10,
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 12,
+                  background: "#fff",
+                  minHeight: 112,
                 }}
               >
                 <div
                   style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: GREEN,
-                    flexShrink: 0,
-                    marginTop: 6,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 10,
+                    marginBottom: 10,
                   }}
-                />
-                <div>
-                  <span style={{ fontSize: 13, color: "#999" }}>
-                    {s.condition}：
+                >
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#6f766f",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {s.condition}
                   </span>
                   <span
-                    style={{ fontSize: 13, fontWeight: 600, color: GREEN_DARK }}
+                    style={{
+                      fontSize: 11,
+                      padding: "2px 8px",
+                      borderRadius: 999,
+                      background: "#f0f4f0",
+                      color: GREEN_DARK,
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
                   >
-                    {s.vehicle_name}
+                    推荐
                   </span>
-                  <span style={{ fontSize: 13, color: "#666" }}>
-                    　{s.reason}
-                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 1.35,
+                    fontWeight: 700,
+                    color: GREEN_DARK,
+                    marginBottom: 8,
+                  }}
+                >
+                  {s.vehicle_name}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    lineHeight: 1.65,
+                    color: "#555",
+                  }}
+                >
+                  {s.reason}
                 </div>
               </div>
             ))}

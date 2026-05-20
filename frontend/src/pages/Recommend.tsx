@@ -8,7 +8,7 @@ import { ResultCard } from "../components/recommend/ResultCard";
 import RecommendSummary from "../components/recommend/RecommendSummary";
 import RecommendRadarChart from "../components/recommend/RadarChart";
 import { recommend } from "../api/client";
-import type { UserProfile, RecommendEvidence } from "../types";
+import type { UserProfile, RecommendEvidence, RecommendResult } from "../types";
 
 const GREEN = "#5a7a5a";
 
@@ -27,12 +27,13 @@ export default function Recommend() {
   const [deepSearch, setDeepSearch] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<RecommendResult[]>([]);
   const [reportMd, setReportMd] = useState<string | null>(null);
   const [evidence, setEvidence] = useState<RecommendEvidence[]>([]);
   const [scene, setScene] = useState("");
+  const [sceneReason, setSceneReason] = useState("");
   const [createdAt, setCreatedAt] = useState("");
-  const [aiSummary, setAiSummary] = useState("");
+  const [aiSummary, setAiSummary] = useState<string | string[]>("");
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -54,7 +55,8 @@ export default function Recommend() {
       setResults(res.results || []);
       setReportMd(res.report_md);
       setEvidence(res.evidence || []);
-      setScene((res as any).scene || "");
+      setScene(res.scene || "");
+      setSceneReason(res.scene_reason || "");
       setCreatedAt(res.created_at);
       setAiSummary(res.ai_summary ?? "");
     } catch (e) {
@@ -66,7 +68,7 @@ export default function Recommend() {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="recommend-page" style={{ width: "100%", minWidth: 0 }}>
       <PageHeader
         tags="MULTI-AGENT · RAG · DEEPSEARCH · SQLITE"
         title="智能推荐"
@@ -77,6 +79,7 @@ export default function Recommend() {
 
       {/* 上半部分：表单 + Agent链路 + 雷达图 */}
       <div
+        className="recommend-top-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -116,10 +119,12 @@ export default function Recommend() {
       {/* 下半部分：推荐结果 + 推荐报告 */}
       {(results.length > 0 || loading) && (
         <div
+          className="recommend-results-grid"
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}
         >
           {/* 左：推荐结果 */}
           <div
+            className="recommend-panel"
             style={{ background: "#fff", borderRadius: 12, padding: "20px" }}
           >
             <div
@@ -170,6 +175,7 @@ export default function Recommend() {
             profile={profile}
             evidence={evidence}
             scene={scene}
+            sceneReason={sceneReason}
             createdAt={createdAt}
           />
         </div>

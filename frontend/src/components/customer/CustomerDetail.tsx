@@ -57,6 +57,7 @@ export default function CustomerDetail({ customer, onStageChange }: Props) {
 
   return (
     <div
+      className="customer-detail-panel"
       style={{
         background: "#fff",
         borderRadius: 12,

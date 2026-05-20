@@ -74,7 +74,7 @@ export default function Compare() {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="compare-page responsive-page" style={{ width: "100%" }}>
       <PageHeader
         tags="MULTI-AGENT · RAG · SQLITE"
         title="竞品对比"
@@ -98,6 +98,7 @@ export default function Compare() {
 
           {(analyses.length > 0 || buyingAdvice.length > 0) && (
             <div
+              className="compare-summary-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",

@@ -18,6 +18,7 @@ export default function PageHeader({
 }: PageHeaderProps) {
   return (
     <div
+      className="page-header"
       style={{
         background: "linear-gradient(135deg, #3d5a3d 0%, #5a7a5a 100%)",
         borderRadius: 12,
@@ -28,7 +29,7 @@ export default function PageHeader({
         alignItems: "flex-start",
       }}
     >
-      <div>
+      <div className="page-header-copy" style={{ minWidth: 0 }}>
         {tags && (
           <div
             style={{
@@ -57,6 +58,7 @@ export default function PageHeader({
       </div>
       {actionLabel && (
         <button
+          className="page-header-action"
           onClick={onAction}
           disabled={disabled}
           style={{

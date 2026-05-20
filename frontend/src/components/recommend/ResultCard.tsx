@@ -1,11 +1,40 @@
 // AutoLens — components/recommend/ResultCard.tsx
 import { useState } from "react";
 
-const GREEN = "#5a7a5a";
-const GREEN_DARK = "#3d5a3d";
+const GREEN = "#4f7f58";
 
 const rankColors = ["#d4a017", "#aaa", "#cd7f32"];
 const rankEmojis = ["🥇", "🥈", "🥉"];
+
+const scoreColors: Record<string, string> = {
+  预算匹配度: "#b87935",
+  续航匹配度: "#2f6fd6",
+  空间匹配度: "#4f83a8",
+  智驾匹配度: "#6f5fa8",
+  安全匹配度: "#4f7f58",
+  补能便利: "#d9822b",
+  性价比: "#3f5f8f",
+};
+
+function getSafetyScore(result: any) {
+  const direct = Number(result?.safety_score);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+
+  const safety = Number(result?.vehicle?.safety_score);
+  return Number.isFinite(safety) && safety > 0 ? Math.min(10, safety / 10) : 6;
+}
+
+function getChargingScore(result: any) {
+  const direct = Number(result?.charging_score);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+
+  const vehicle = result?.vehicle || {};
+  let score = 5;
+  if (vehicle.energy_type === "插混" || vehicle.energy_type === "增程") score += 3;
+  if (Number(vehicle.range_km) >= 650) score += 1;
+  if (Number(vehicle.fast_charge_minutes) > 0 && Number(vehicle.fast_charge_minutes) <= 30) score += 1;
+  return Math.max(0, Math.min(10, score));
+}
 
 function ScoreBar({
   label,
@@ -16,30 +45,48 @@ function ScoreBar({
   score: number;
   max: number;
 }) {
+  const rawScore = Number.isFinite(Number(score)) ? Number(score) : 0;
+  const safeScore = Math.max(0, Math.min(max, rawScore));
+  const percent = Math.max(0, Math.min(100, (safeScore / max) * 100));
+  const color = scoreColors[label] || GREEN;
+
   return (
     <div
-      style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}
+      className="recommend-score-bar"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "76px minmax(0, 1fr) 44px",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 6,
+      }}
     >
-      <span style={{ fontSize: 12, color: "#888", width: 72, flexShrink: 0 }}>
+      <span style={{ fontSize: 12, color: "#888", minWidth: 0 }}>
         {label}
       </span>
       <div
-        style={{ flex: 1, background: "#f0f0ec", borderRadius: 4, height: 6 }}
+        style={{
+          minWidth: 0,
+          background: "#f0f0ec",
+          borderRadius: 4,
+          height: 6,
+          overflow: "hidden",
+        }}
       >
         <div
           style={{
-            width: `${(score / max) * 100}%`,
+            width: `${percent}%`,
             height: "100%",
-            background: GREEN,
+            background: color,
             borderRadius: 4,
             transition: "width 0.5s",
           }}
         />
       </div>
       <span
-        style={{ fontSize: 12, color: "#888", width: 36, textAlign: "right" }}
+        style={{ fontSize: 12, color: "#888", textAlign: "right" }}
       >
-        {score}/{max}
+        {safeScore}/{max}
       </span>
     </div>
   );
@@ -59,6 +106,8 @@ export function ResultCard({
   const [open, setOpen] = useState(defaultOpen);
   const v = result.vehicle;
   const score = result.total_score || 0;
+  const safetyScore = getSafetyScore(result);
+  const chargingScore = getChargingScore(result);
   const rankEmoji = rankEmojis[rank] || `#${rank + 1}`;
 
   // 推荐理由
@@ -72,13 +121,14 @@ export function ResultCard({
         background: "#fff",
         borderRadius: 12,
         marginBottom: 10,
-        border: `1px solid ${open ? GREEN : "#e8e8e4"}`,
+        border: `1px solid ${open ? "#5a7a5a" : "#e8e8e4"}`,
         transition: "border-color 0.2s",
         overflow: "hidden",
       }}
     >
       {/* 卡片头部（始终显示） */}
       <div
+        className="recommend-result-head"
         onClick={() => setOpen(!open)}
         style={{
           padding: "14px 20px",
@@ -122,14 +172,41 @@ export function ResultCard({
             )}
           </div>
           {v && (
-            <div style={{ fontSize: 12, color: "#999", marginTop: 3 }}>
-              {v.price_min}-{v.price_max}万 · {v.seats}座
-            </div>
+            <>
+              <div style={{ fontSize: 12, color: "#999", marginTop: 3 }}>
+                {v.price_min}-{v.price_max}万 · {v.seats}座
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  flexWrap: "wrap",
+                  marginTop: 6,
+                }}
+              >
+                {typeof v.safety_score === "number" && (
+                  <span style={{ fontSize: 11, color: "#6f766f" }}>
+                    安全 {v.safety_score}分
+                  </span>
+                )}
+                {v.fast_charge_minutes && (
+                  <span style={{ fontSize: 11, color: "#6f766f" }}>
+                    快充约{v.fast_charge_minutes}分钟
+                  </span>
+                )}
+                {v.monthly_sales && (
+                  <span style={{ fontSize: 11, color: "#6f766f" }}>
+                    月销 {v.monthly_sales}
+                  </span>
+                )}
+              </div>
+            </>
           )}
         </div>
 
         {/* 评分 + 展开箭头 */}
         <div
+          className="recommend-result-score"
           style={{
             display: "flex",
             alignItems: "center",
@@ -137,7 +214,7 @@ export function ResultCard({
             flexShrink: 0,
           }}
         >
-          <span style={{ fontSize: 22, fontWeight: 800, color: GREEN_DARK }}>
+          <span style={{ fontSize: 22, fontWeight: 800, color: "#2f3a46" }}>
             {score}
             <span style={{ fontSize: 12, color: "#999", fontWeight: 400 }}>
               分
@@ -160,19 +237,24 @@ export function ResultCard({
       {open && (
         <div style={{ padding: "16px 20px", borderTop: "1px solid #f0f0ec" }}>
           <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}
+            className="recommend-card-body-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+              gap: 18,
+            }}
           >
             {/* 左：评分条 */}
-            <div>
+            <div style={{ minWidth: 0 }}>
               <ScoreBar
                 label="预算匹配度"
                 score={result.price_score || 0}
-                max={30}
+                max={25}
               />
               <ScoreBar
                 label="续航匹配度"
                 score={result.range_score || 0}
-                max={20}
+                max={15}
               />
               <ScoreBar
                 label="空间匹配度"
@@ -185,15 +267,25 @@ export function ResultCard({
                 max={15}
               />
               <ScoreBar
+                label="安全匹配度"
+                score={safetyScore}
+                max={10}
+              />
+              <ScoreBar
+                label="补能便利"
+                score={chargingScore}
+                max={10}
+              />
+              <ScoreBar
                 label="性价比"
                 score={result.value_score || 0}
-                max={20}
+                max={10}
               />
             </div>
 
             {/* 右：推荐理由 + 证据 */}
-            <div>
-              <div style={{ fontSize: 14, color: "#5a7a5a", marginBottom: 6 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 14, color: "#3d5a3d", marginBottom: 6 }}>
                 推荐理由
               </div>
               <div
@@ -267,7 +359,7 @@ export function ResultCard({
                     padding: "3px 10px",
                     borderRadius: 10,
                     background: "#f0f4f0",
-                    color: GREEN_DARK,
+                    color: "#3d5a3d",
                   }}
                 >
                   {h}

@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel, Field
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Union
 from datetime import datetime
 from enum import Enum
 
@@ -34,7 +34,6 @@ class FocusPoint(str, Enum):
     SAFETY    = "安全"
     VALUE     = "性价比"
     CHARGING  = "补能"
-    RETENTION = "保值"
 
 
 class CommuteDistance(str, Enum):
@@ -98,11 +97,15 @@ class VehicleBase(BaseModel):
     price_min:       float          = Field(..., description="最低价格（万元）")
     price_max:       float          = Field(..., description="最高价格（万元）")
     range_km:        Optional[int]  = Field(None, description="CLTC续航里程（km）")
+    fast_charge_minutes: Optional[int] = Field(None, description="快充至80%时间（min）")
     autopilot_level: Optional[str]  = Field(None, description="智驾等级，如L2+")
+    smart_cockpit:   Optional[str]  = Field(None, description="智能座舱")
     seats:           int            = Field(5,    description="座位数")
     cargo_liters:    Optional[int]  = Field(None, description="后备厢容积（L）")
+    wheelbase:       Optional[int]  = Field(None, description="轴距（mm）")
     charge_time_ac:  Optional[float]= Field(None, description="慢充时间（h）")
     charge_time_dc:  Optional[float]= Field(None, description="快充至80%时间（min）")
+    monthly_sales:   Optional[int]  = Field(None, description="月销量")
     highlights:      List[str]      = Field(default_factory=list, description="卖点标签")
     image_url:       Optional[str]  = Field(None, description="车型图片URL")
     weaknesses: List[str] = Field(default_factory=list, description="短板")
@@ -123,11 +126,15 @@ class VehicleUpdate(BaseModel):
     price_min:       Optional[float]       = None
     price_max:       Optional[float]       = None
     range_km:        Optional[int]         = None
+    fast_charge_minutes: Optional[int]      = None
     autopilot_level: Optional[str]         = None
+    smart_cockpit:   Optional[str]         = None
     seats:           Optional[int]         = None
     cargo_liters:    Optional[int]         = None
+    wheelbase:       Optional[int]         = None
     charge_time_ac:  Optional[float]       = None
     charge_time_dc:  Optional[float]       = None
+    monthly_sales:   Optional[int]         = None
     highlights:      Optional[List[str]]   = None
     image_url:       Optional[str]         = None
 
@@ -184,6 +191,8 @@ class VehicleScore(BaseModel):
     range_score:      float         = Field(..., description="续航匹配分")
     space_score:      float         = Field(..., description="空间匹配分")
     autopilot_score:  float         = Field(..., description="智驾匹配分")
+    safety_score:     float         = Field(..., description="安全匹配分")
+    charging_score:   float         = Field(..., description="补能便利分")
     value_score:      float         = Field(..., description="性价比评分")
     within_budget:    bool          = Field(..., description="是否在预算内")
     price_gap:        Optional[float] = Field(None, description="超预算金额（万元），None表示在预算内")
@@ -198,13 +207,20 @@ class RecommendEvidence(BaseModel):
 
 class RecommendResult(BaseModel):
     """单个推荐结果"""
-    rank:          int
-    vehicle:       Vehicle
-    score:         VehicleScore
-    scene:         RecommendScene
-    sales_pitch:   str              = Field(..., description="销售话术（Markdown）")
-    evidence:      List[RecommendEvidence] = Field(default_factory=list)
-    deep_search_used: bool          = Field(False, description="是否用了联网搜索")
+    vehicle_id:       int
+    vehicle:          Optional[dict] = None
+    total_score:      float
+    price_score:      float
+    range_score:      float
+    space_score:      float
+    autopilot_score:  float
+    safety_score:     float
+    charging_score:   float
+    value_score:      float
+    within_budget:    bool
+    price_gap:        Optional[float] = None
+    sales_pitch:      str = Field("", description="销售话术（Markdown）")
+    rank_reason:      Optional[str] = None
 
 
 class RecommendResponse(BaseModel):
@@ -212,8 +228,10 @@ class RecommendResponse(BaseModel):
     session_id:   str
     profile:      UserProfile
     scene:        RecommendScene
+    scene_reason: Optional[str] = None
     results:      List[RecommendResult]
     report_md:    str              = Field(..., description="完整推荐报告 Markdown")
+    ai_summary:   Optional[Union[str, List[str]]] = None
     created_at:   datetime
 
 

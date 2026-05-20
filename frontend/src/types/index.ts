@@ -10,8 +10,7 @@ export type FocusPoint =
   | "智驾"
   | "安全"
   | "性价比"
-  | "补能"
-  | "保值";
+  | "补能";
 export type CommuteDistance = "50km以内" | "50-100km" | "100km以上";
 export type ChargingAvailable = "有" | "无" | "不确定";
 export type RecommendScene =
@@ -49,6 +48,11 @@ export interface Vehicle {
   price_min: number;
   price_max: number;
   range_km?: number;
+  fast_charge_minutes?: number;
+  safety_score?: number;
+  monthly_sales?: number;
+  wheelbase?: number;
+  smart_cockpit?: string;
   autopilot_level?: string;
   seats: number;
   cargo_liters?: number;
@@ -114,9 +118,11 @@ export interface VehicleScore {
   range_score: number;
   space_score: number;
   autopilot_score: number;
+  safety_score: number;
+  charging_score: number;
   value_score: number;
   within_budget: boolean;
-  price_gap?: number;
+  price_gap?: number | null;
 }
 
 export interface RecommendEvidence {
@@ -126,24 +132,32 @@ export interface RecommendEvidence {
 }
 
 export interface RecommendResult {
-  rank: number;
-  vehicle: Vehicle;
-  score: VehicleScore;
-  scene: RecommendScene;
+  vehicle_id: number;
+  vehicle?: Vehicle;
+  total_score: number;
+  price_score: number;
+  range_score: number;
+  space_score: number;
+  autopilot_score: number;
+  safety_score: number;
+  charging_score: number;
+  value_score: number;
+  within_budget: boolean;
+  price_gap?: number | null;
   sales_pitch: string;
-  evidence: RecommendEvidence[];
-  deep_search_used: boolean;
+  rank_reason?: string;
 }
 
 export interface RecommendResponse {
   session_id: string;
   profile: UserProfile;
   scene: RecommendScene;
+  scene_reason?: string;
   results: RecommendResult[];
   report_md: string;
   evidence: RecommendEvidence[];
   created_at: string;
-  ai_summary?: string;
+  ai_summary?: string | string[];
 }
 
 // ─────────────────────────────────────────

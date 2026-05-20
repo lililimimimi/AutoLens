@@ -102,6 +102,7 @@ export default function VehicleModal({
   return (
     // 遮罩
     <div
+      className="modal-backdrop"
       style={{
         position: "fixed",
         inset: 0,
@@ -117,6 +118,7 @@ export default function VehicleModal({
     >
       {/* 弹窗 */}
       <div
+        className="vehicle-modal-card app-modal-card"
         style={{
           background: "#fff",
           borderRadius: 16,
@@ -128,6 +130,7 @@ export default function VehicleModal({
         }}
       >
         <div
+          className="modal-form-grid"
           style={{
             display: "flex",
             justifyContent: "space-between",

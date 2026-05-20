@@ -11,31 +11,74 @@ import {
 } from "recharts";
 import { Activity, ThumbsUp, AlertCircle, Bot, Info } from "lucide-react";
 
-const COLORS = ["#3d5a3d", "#e67e00", "#1a73e8"];
+const COLORS = ["#3f5f8f", "#d9822b", "#4f7f58"];
+
+const DIMENSION_COLORS: Record<string, string> = {
+  预算: "#b87935",
+  续航: "#2f6fd6",
+  空间: "#4f83a8",
+  智驾: "#6f5fa8",
+  安全: "#4f7f58",
+  补能: "#d9822b",
+  性价比: "#3f5f8f",
+};
+
+function dimensionColor(label: string) {
+  return DIMENSION_COLORS[label] || "#3f5f8f";
+}
+
+function clampScore(score: number) {
+  return Math.max(0, Math.min(100, Math.round(score || 0)));
+}
+
+function scoreValue(result: any, key: string) {
+  const direct = Number(result?.[key]);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+
+  const vehicle = result?.vehicle || {};
+  if (key === "safety_score") {
+    const safety = Number(vehicle.safety_score);
+    return Number.isFinite(safety) && safety > 0 ? Math.min(10, safety / 10) : 6;
+  }
+
+  if (key === "charging_score") {
+    let score = 5;
+    if (vehicle.energy_type === "插混" || vehicle.energy_type === "增程") score += 3;
+    if (Number(vehicle.range_km) >= 650) score += 1;
+    if (Number(vehicle.fast_charge_minutes) > 0 && Number(vehicle.fast_charge_minutes) <= 30) score += 1;
+    return Math.max(0, Math.min(10, score));
+  }
+
+  return 0;
+}
+
+function boundedScoreValue(result: any, key: string, max: number) {
+  return Math.max(0, Math.min(max, scoreValue(result, key)));
+}
 
 interface Props {
   results: any[];
-  aiSummary?: string;
+  aiSummary?: string | string[];
 }
 
 export default function RecommendRadarChart({ results, aiSummary }: Props) {
   const isEmpty = !results || results.length === 0;
-  console.log("aiSummary:", aiSummary);
 
   const dimensions = [
-    { subject: "预算", key: "price_score", max: 30 },
-    { subject: "续航", key: "range_score", max: 20 },
+    { subject: "预算", key: "price_score", max: 25 },
+    { subject: "续航", key: "range_score", max: 15 },
     { subject: "空间", key: "space_score", max: 15 },
     { subject: "智驾", key: "autopilot_score", max: 15 },
-    { subject: "性价比", key: "value_score", max: 20 },
-    { subject: "安全", key: null, max: null },
+    { subject: "安全", key: "safety_score", max: 10 },
+    { subject: "补能", key: "charging_score", max: 10 },
+    { subject: "性价比", key: "value_score", max: 10 },
   ];
 
   const data = dimensions.map((dim) => {
     const row: any = { subject: dim.subject, fullMark: 100 };
     results.forEach((r) => {
       const name = `${r.vehicle?.brand ?? ""} ${r.vehicle?.model ?? ""}`.trim();
-      row[name] = dim.key ? Math.round((r[dim.key] / dim.max) * 100) : 85;
+      row[name] = clampScore((boundedScoreValue(r, dim.key, dim.max) / dim.max) * 100);
     });
     return row;
   });
@@ -43,21 +86,28 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
   // 算优势和待优化维度（基于 top1）
   const top = results[0];
   const dimScores = top
-    ? [
-        { label: "续航", score: Math.round((top.range_score / 20) * 100) },
-        { label: "安全", score: 85 },
-        { label: "预算", score: Math.round((top.price_score / 30) * 100) },
-        { label: "性价比", score: Math.round((top.value_score / 20) * 100) },
-        { label: "补能", score: 80 },
-        { label: "空间", score: Math.round((top.space_score / 15) * 100) },
-      ].sort((a, b) => b.score - a.score)
+    ? dimensions
+        .map((dim) => ({
+          label: dim.subject,
+          raw: boundedScoreValue(top, dim.key, dim.max),
+          max: dim.max,
+          score: clampScore((boundedScoreValue(top, dim.key, dim.max) / dim.max) * 100),
+        }))
+        .sort((a, b) => b.score - a.score)
     : [];
 
   const strengths = dimScores.slice(0, 3);
   const weaknesses = dimScores.slice(-3).reverse();
+  const aiItems = Array.isArray(aiSummary)
+    ? aiSummary
+    : (aiSummary || "")
+        .split(/\n|。|；/)
+        .map((item) => item.trim())
+        .filter(Boolean);
 
   return (
     <div
+      className="recommend-radar-card"
       style={{
         background: "#fff",
         borderRadius: 12,
@@ -116,7 +166,8 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
       ) : (
         <>
           {/* 雷达图 */}
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="recommend-radar-chart">
+          <ResponsiveContainer width="100%" height="100%">
             <RadarChart
               data={data}
               margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
@@ -153,11 +204,13 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
               />
             </RadarChart>
           </ResponsiveContainer>
+          </div>
 
           {/* 得分列表 */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {results.map((r, i) => (
               <div
+                className="recommend-radar-score-row"
                 key={i}
                 style={{
                   display: "flex",
@@ -211,17 +264,20 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
           {/* 优势 + 待优化 */}
           {top && (
             <div
+              className="recommend-radar-insights"
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
                 gap: 10,
               }}
             >
               <div
                 style={{
-                  background: "#f0f5f0",
+                  background: "#f5f7f2",
+                  border: "1px solid #d9e4d6",
                   borderRadius: 10,
                   padding: "12px 14px",
+                  minWidth: 0,
                 }}
               >
                 <div
@@ -236,34 +292,36 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                   }}
                 >
                   <ThumbsUp size={13} color="#3d5a3d" />
-                  优势维度（高于同级平均）
+                  高匹配维度
                 </div>
                 {strengths.map((s, i) => (
                   <div
                     key={i}
                     style={{
-                      display: "flex",
+                      display: "grid",
+                      gridTemplateColumns: "42px minmax(0, 1fr) 42px",
                       alignItems: "center",
                       gap: 8,
                       marginBottom: 6,
                     }}
                   >
-                    <span style={{ fontSize: 12, width: 40, color: "#555" }}>
-                      {s.icon} {s.label}
+                    <span style={{ fontSize: 12, color: "#555", minWidth: 0 }}>
+                      {s.label}
                     </span>
                     <div
                       style={{
-                        flex: 1,
+                        minWidth: 0,
                         height: 6,
-                        background: "#e0e8e0",
+                        background: "#e8edf4",
                         borderRadius: 3,
+                        overflow: "hidden",
                       }}
                     >
                       <div
                         style={{
                           width: `${s.score}%`,
                           height: "100%",
-                          background: "#3d5a3d",
+                          background: dimensionColor(s.label),
                           borderRadius: 3,
                         }}
                       />
@@ -271,12 +329,12 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                     <span
                       style={{
                         fontSize: 11,
-                        color: "#3d5a3d",
+                        color: dimensionColor(s.label),
                         fontWeight: 600,
-                        width: 24,
+                        textAlign: "right",
                       }}
                     >
-                      {s.score}
+                      {s.raw}/{s.max}
                     </span>
                   </div>
                 ))}
@@ -284,8 +342,10 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
               <div
                 style={{
                   background: "#fff8f0",
+                  border: "1px solid #f2e4d5",
                   borderRadius: 10,
                   padding: "12px 14px",
+                  minWidth: 0,
                 }}
               >
                 <div
@@ -306,28 +366,30 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                   <div
                     key={i}
                     style={{
-                      display: "flex",
+                      display: "grid",
+                      gridTemplateColumns: "42px minmax(0, 1fr) 42px",
                       alignItems: "center",
                       gap: 8,
                       marginBottom: 6,
                     }}
                   >
-                    <span style={{ fontSize: 12, width: 40, color: "#555" }}>
-                      {s.icon} {s.label}
+                    <span style={{ fontSize: 12, color: "#555", minWidth: 0 }}>
+                      {s.label}
                     </span>
                     <div
                       style={{
-                        flex: 1,
+                        minWidth: 0,
                         height: 6,
                         background: "#f0e0d0",
                         borderRadius: 3,
+                        overflow: "hidden",
                       }}
                     >
                       <div
                         style={{
                           width: `${s.score}%`,
                           height: "100%",
-                          background: "#e67e00",
+                          background: dimensionColor(s.label),
                           borderRadius: 3,
                         }}
                       />
@@ -335,12 +397,12 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                     <span
                       style={{
                         fontSize: 11,
-                        color: "#e67e00",
+                        color: dimensionColor(s.label),
                         fontWeight: 600,
-                        width: 24,
+                        textAlign: "right",
                       }}
                     >
-                      {s.score}
+                      {s.raw}/{s.max}
                     </span>
                   </div>
                 ))}
@@ -349,12 +411,12 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
           )}
 
           {/* AI 解读 */}
-          {aiSummary && (
+          {aiItems.length > 0 && (
             <div
               style={{
                 background: "#f0f5ff",
                 borderRadius: 10,
-                padding: "12px 14px",
+                padding: "14px 16px",
               }}
             >
               <div
@@ -362,30 +424,20 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: 600,
                   color: "#1a73e8",
-                  marginBottom: 8,
+                  marginBottom: 10,
                 }}
               >
-                <Bot size={30} color="#1a73e8" />
+                <Bot size={18} color="#1a73e8" />
                 AI 解读
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {aiSummary
-                  .split("，")
-                  .filter(Boolean)
-                  .map((sentence, i) => {
-                    const vehicle = results[i]?.vehicle;
-                    const vehicleName = vehicle
-                      ? `${vehicle.brand} ${vehicle.model}`
-                      : "";
-                    const rest = vehicleName
-                      ? sentence
-                          .replace(vehicle.brand, "")
-                          .replace(vehicle.model, "")
-                          .trim()
-                      : sentence;
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {aiItems.slice(0, 4).map((item, i) => {
+                    const [title, ...restParts] = item.split(/：|:/);
+                    const hasTitle = restParts.length > 0 && title.length <= 18;
+                    const content = hasTitle ? restParts.join("：").trim() : item;
                     return (
                       <div
                         key={i}
@@ -412,12 +464,12 @@ export default function RecommendRadarChart({ results, aiSummary }: Props) {
                             lineHeight: 1.7,
                           }}
                         >
-                          {vehicleName && (
+                          {hasTitle && (
                             <span style={{ fontWeight: 600, color: "#1a73e8" }}>
-                              {vehicleName}
+                              {title}
                             </span>
                           )}
-                          {rest}
+                          {hasTitle ? `：${content}` : content}
                         </span>
                       </div>
                     );

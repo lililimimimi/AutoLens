@@ -2,6 +2,11 @@
 
 AutoLens 是一个面向新能源汽车销售场景的智能推荐与客户运营平台。项目通过车型数据库、客户画像、RAG 知识库和大模型 Agent 流程，为销售顾问提供数据总览、智能推荐、智能客服、竞品对比、客户管理和车型管理能力。
 
+## 文档导航
+
+- 前端开发说明：[frontend/README.md](frontend/README.md)
+- 后端开发说明：[backend/README.md](backend/README.md)
+
 ## 功能特性
 
 - 数据总览：查看车型、客户阶段、销量、能源类型等业务统计。
@@ -65,6 +70,32 @@ AutoLens/
 - Node.js 18+
 - npm
 - Python 3.10+
+
+## 快速启动
+
+推荐先启动后端，再启动前端。
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install fastapi uvicorn pydantic pydantic-settings openai tavily-python chromadb sentence-transformers
+uvicorn app.main:app --reload --port 8003
+```
+
+另开一个终端：
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+访问：
+
+```text
+http://localhost:3000
+```
 
 ## 后端启动
 
@@ -231,4 +262,3 @@ http://localhost:8003
 - 如启用深度搜索或联网搜索，请确认 `TAVILY_API_KEY` 可用。
 - ChromaDB 首次运行会下载 embedding 模型，可能需要一些时间。
 - SQLite 数据库和 ChromaDB 数据默认保存在 `backend/` 目录下，便于本地开发调试。
-

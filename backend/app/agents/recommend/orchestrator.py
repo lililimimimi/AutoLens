@@ -45,13 +45,14 @@ async def run_recommend_pipeline(
         evidence=evidence,
     )
     scene = recommend_result.get("scene", "通用")
+    scene_reason = recommend_result.get("scene_reason", "")
     rankings = recommend_result.get("rankings", [])
     summary = recommend_result.get("report_summary", "")
     print(f"       场景：{scene}，推荐 {len(rankings)} 辆车")
 
     # ── Step 3: 拼接报告（不调用 LLM）────
     print("  [3/3] 拼接推荐报告...")
-    report_md = _build_report(summary, rankings)
+    report_md = _build_report(summary, rankings, scene, scene_reason)
 
     # ── 保存结果 ──────────────────────────
     save_recommendation({
@@ -69,6 +70,7 @@ async def run_recommend_pipeline(
         "session_id": session_id,
         "profile": profile,
         "scene": scene,
+        "scene_reason": scene_reason,
         "results": rankings,
         "report_md": report_md,
         "evidence": evidence,
@@ -77,9 +79,14 @@ async def run_recommend_pipeline(
     }
 
 
-def _build_report(summary: str, rankings: list) -> str:
+def _build_report(summary: str, rankings: list, scene: str = "", scene_reason: str = "") -> str:
     """拼接完整推荐报告（纯字符串拼接，不调用 LLM）"""
     lines = ["# 新能源汽车推荐报告\n"]
+
+    if scene:
+        lines.append(f"## 推荐场景\n\n**{scene}**")
+        if scene_reason:
+            lines.append(f"\n\n{scene_reason}\n")
 
     if summary:
         lines.append(f"## 整体推荐\n\n{summary}\n")

@@ -46,6 +46,7 @@ export default function AddVehicleModal({
 
   return (
     <div
+      className="modal-backdrop"
       style={{
         position: "fixed",
         inset: 0,
@@ -58,6 +59,7 @@ export default function AddVehicleModal({
       onClick={onClose}
     >
       <div
+        className="compare-add-modal app-modal-card"
         style={{
           background: "#fff",
           borderRadius: 14,
@@ -131,7 +133,10 @@ export default function AddVehicleModal({
         </div>
 
         {/* 主体 */}
-        <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        <div
+          className="compare-add-modal-body"
+          style={{ display: "flex", flex: 1, overflow: "hidden" }}
+        >
           {/* 左侧车身类型 */}
           <div
             style={{

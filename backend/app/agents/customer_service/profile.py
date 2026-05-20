@@ -22,7 +22,7 @@ PROFILE_PROMPT = """你是新能源汽车销售助手，负责从用户的自然
   "charging_available": "有|无|不确定|null",
   "preferred_body": ["SUV","轿车","MPV","跑车"] 或 [],
   "preferred_energy": ["纯电","插混","增程"] 或 [],
-  "focus_points": ["续航","空间","智驾","安全","性价比","补能","保值"] 的子集 或 [],
+  "focus_points": ["续航","空间","智驾","安全","性价比","补能"] 的子集 或 [],
   "city": "城市名或null",
   "extra_notes": "其他补充信息或null"
 }

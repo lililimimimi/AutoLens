@@ -25,11 +25,14 @@ export default function CompareTable({ vehicles }: CompareTableProps) {
   const bestPrice = Math.min(...vehicles.map((v) => v.price_min));
 
   return (
-    <div style={{ background: "#fff", borderRadius: 12, padding: "20px 24px" }}>
+    <div
+      className="compare-table-card table-scroll-card"
+      style={{ background: "#fff", borderRadius: 12, padding: "20px 24px", minWidth: 0 }}
+    >
       <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>
         详细对比
       </div>
-      <div style={{ overflowX: "auto" }}>
+      <div className="table-scroll-inner" style={{ overflowX: "auto" }}>
         <table
           style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}
         >

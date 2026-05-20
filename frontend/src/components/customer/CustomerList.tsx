@@ -34,6 +34,7 @@ export default function CustomerList({
 
   return (
     <div
+      className="customer-list-panel"
       style={{
         background: "#fff",
         borderRadius: 12,

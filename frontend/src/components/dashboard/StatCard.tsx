@@ -10,6 +10,7 @@ interface StatCardProps {
 export default function StatCard({ label, value, sub, icon }: StatCardProps) {
   return (
     <div
+      className="dashboard-stat-card"
       style={{
         background: "#fff",
         borderRadius: 12,

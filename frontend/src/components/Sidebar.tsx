@@ -23,9 +23,15 @@ const navItems = [
   { path: "/vehicles", icon: Car, label: "车型管理"},
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  open?: boolean;
+  onNavigate?: () => void;
+}
+
+export default function Sidebar({ open = false, onNavigate }: SidebarProps) {
   return (
     <aside
+      className={`sidebar${open ? " open" : ""}`}
       style={{
         width: 220,
         minHeight: "100vh",
@@ -102,6 +108,7 @@ export default function Sidebar() {
             key={path}
             to={path}
             end={path === "/"}
+            onClick={onNavigate}
             style={({ isActive }) => ({
               display: "flex",
               alignItems: "center",

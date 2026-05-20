@@ -14,17 +14,21 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
 
   return (
     <div
+      className={`chat-bubble-row ${isUser ? "is-user" : "is-assistant"}`}
       style={{
         display: "flex",
         flexDirection: isUser ? "row-reverse" : "row",
         alignItems: "flex-start",
-        gap: 10,
-        marginBottom: 20,
-        marginLeft: isUser ? "20%" : 0,
+        gap: 12,
+        marginBottom: 18,
+        width: "100%",
+        paddingLeft: isUser ? 48 : 0,
+        paddingRight: isUser ? 0 : 48,
       }}
     >
       {/* 头像 */}
       <div
+        className="chat-avatar"
         style={{
           width: 34,
           height: 34,
@@ -44,19 +48,22 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
 
       {/* 气泡 */}
       <div
+        className={`chat-bubble ${isUser ? "is-user" : "is-assistant"}`}
         style={{
-          maxWidth: "80%",
+          maxWidth: isUser ? "min(72%, 420px)" : "min(78%, 620px)",
+          minWidth: 0,
           background: isUser ? GREEN_DARK : "#f5f5f0",
           color: isUser ? "#fff" : "#2d2d2d",
-          borderRadius: "12px 12px 12px 12px",
-          padding: "14px 16px",
-          fontSize: 14,
-          lineHeight: 1.7,
+          borderRadius: isUser ? "10px 4px 10px 10px" : "4px 12px 12px 12px",
+          padding: isUser ? "10px 12px 8px" : "16px 18px",
+          fontSize: isUser ? 13 : 14,
+          lineHeight: isUser ? 1.45 : 1.75,
           boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+          overflowWrap: "anywhere",
         }}
       >
         {isUser ? (
-          <span>{message.content}</span>
+          <div style={{ fontWeight: 600 }}>{message.content}</div>
         ) : (
           <ReactMarkdown
             components={{
@@ -77,7 +84,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                   style={{
                     fontSize: 14,
                     fontWeight: 600,
-                    margin: "10px 10px 4px",
+                    margin: "10px 0 4px",
                     color: "#2d2d2d",
                   }}
                 >
@@ -85,12 +92,22 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                 </h3>
               ),
               p: ({ children }) => (
-                <p style={{ margin: "10px 10px 4px", fontSize: 14 }}>
+                <p style={{ margin: "0 0 10px", fontSize: 14 }}>
                   {children}
                 </p>
               ),
+              ol: ({ children }) => (
+                <ol style={{ margin: "8px 0 10px", paddingLeft: 20 }}>
+                  {children}
+                </ol>
+              ),
+              ul: ({ children }) => (
+                <ul style={{ margin: "8px 0 10px", paddingLeft: 20 }}>
+                  {children}
+                </ul>
+              ),
               li: ({ children }) => (
-                <li style={{ margin: "10px 10px 4px", fontSize: 14 }}>
+                <li style={{ margin: "4px 0", fontSize: 14 }}>
                   {children}
                 </li>
               ),
@@ -104,7 +121,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                   style={{
                     border: "none",
                     borderTop: "1px solid #e8e8e4",
-                    margin: "10px 10px 4px",
+                    margin: "10px 0",
                   }}
                 />
               ),
@@ -117,10 +134,11 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         {/* 时间 */}
         <div
           style={{
-            fontSize: 11,
+            fontSize: isUser ? 10 : 11,
             color: isUser ? "rgba(255,255,255,0.6)" : "#bbb",
-            marginTop: 4,
+            marginTop: isUser ? 2 : 4,
             textAlign: "right",
+            lineHeight: 1.2,
           }}
         >
           {new Date(message.created_at).toLocaleTimeString("zh-CN", {

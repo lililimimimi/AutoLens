@@ -1,25 +1,5 @@
 // AutoLens — components/Header.tsx
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import {
-  Menu,
-  X,
-  BarChart2,
-  Sparkles,
-  MessageCircle,
-  GitCompare,
-  Users,
-  Car,
-} from "lucide-react";
-
-const navItems = [
-  { path: "/", icon: BarChart2, label: "数据总览" },
-  { path: "/recommend", icon: Sparkles, label: "智能推荐" },
-  { path: "/customer-service", icon: MessageCircle, label: "智能客服" },
-  { path: "/compare", icon: GitCompare, label: "竞品对比" },
-  { path: "/customers", icon: Users, label: "客户管理" },
-  { path: "/vehicles", icon: Car, label: "车型管理" },
-];
+import { Menu } from "lucide-react";
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   return (

@@ -75,7 +75,7 @@ export default function VehicleManagement() {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="vehicle-page responsive-page" style={{ width: "100%" }}>
       <PageHeader
         tags="车型库 · RAG · ChromaDB · SQLite"
         title="车型管理"
@@ -105,7 +105,10 @@ export default function VehicleManagement() {
       />
 
       {/* 统计栏 */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+      <div
+        className="vehicle-stat-grid"
+        style={{ display: "flex", gap: 12, marginBottom: 16 }}
+      >
         {[
           {
             label: "全部车型",
@@ -195,6 +198,7 @@ export default function VehicleManagement() {
       />
       {/* 分页 */}
       <div
+        className="vehicle-pagination"
         style={{
           display: "flex",
           justifyContent: "center",

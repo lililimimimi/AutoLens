@@ -20,7 +20,6 @@ const focusPoints: FocusPoint[] = [
   "安全",
   "性价比",
   "补能",
-  "保值",
 ];
 
 interface CustomerModalProps {
@@ -81,6 +80,8 @@ export default function CustomerModal({ onSave, onClose, customer }: CustomerMod
         ...prev.profile,
         focus_points: prev.profile.focus_points.includes(f)
           ? prev.profile.focus_points.filter((x: FocusPoint) => x !== f)
+          : prev.profile.focus_points.length >= 4
+            ? prev.profile.focus_points
           : [...prev.profile.focus_points, f],
       },
     }));
@@ -116,6 +117,7 @@ export default function CustomerModal({ onSave, onClose, customer }: CustomerMod
 
   return (
     <div
+      className="modal-backdrop"
       style={{
         position: "fixed",
         inset: 0,
@@ -130,6 +132,7 @@ export default function CustomerModal({ onSave, onClose, customer }: CustomerMod
       }}
     >
       <div
+        className="customer-modal-card app-modal-card"
         style={{
           background: "#fff",
           borderRadius: 16,
@@ -168,6 +171,7 @@ export default function CustomerModal({ onSave, onClose, customer }: CustomerMod
 
         {/* 基本信息 */}
         <div
+          className="modal-form-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
@@ -279,30 +283,37 @@ export default function CustomerModal({ onSave, onClose, customer }: CustomerMod
         </Field>
 
         {/* 关注点 */}
-        <Field label="关注点（多选）">
+        <Field label="关注点（多选，最多4项）">
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {focusPoints.map((f) => (
-              <button
-                key={f}
-                onClick={() => toggleFocus(f)}
-                style={{
-                  padding: "6px 14px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  border: `1.5px solid ${form.profile.focus_points.includes(f) ? GREEN : "#e0e0d8"}`,
-                  background: form.profile.focus_points.includes(f)
-                    ? "#f0f4f0"
-                    : "#fff",
-                  color: form.profile.focus_points.includes(f)
-                    ? GREEN_DARK
-                    : "#666",
-                  cursor: "pointer",
-                }}
-              >
-                {f}
-              </button>
-            ))}
+            {focusPoints.map((f) => {
+              const selected = form.profile.focus_points.includes(f);
+              const disabled = !selected && form.profile.focus_points.length >= 4;
+              return (
+                <button
+                  key={f}
+                  onClick={() => toggleFocus(f)}
+                  disabled={disabled}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    border: `1.5px solid ${selected ? GREEN : "#e0e0d8"}`,
+                    background: selected ? "#f0f4f0" : "#fff",
+                    color: selected ? GREEN_DARK : disabled ? "#bbb" : "#666",
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.55 : 1,
+                  }}
+                >
+                  {f}
+                </button>
+              );
+            })}
           </div>
+          {form.profile.focus_points.length > 0 && (
+            <div style={{ fontSize: 11, color: "#999", marginTop: 6 }}>
+              已选择 {form.profile.focus_points.length}/4 项
+            </div>
+          )}
         </Field>
 
         {/* 备注 */}
