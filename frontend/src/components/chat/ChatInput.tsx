@@ -60,7 +60,7 @@ export default function ChatInput({
             background: "transparent",
             border: "none",
             outline: "none",
-            fontSize: 18,
+            fontSize: 15,
             lineHeight: 1.6,
             resize: "none",
             color: "#2d2d2d",

@@ -23,7 +23,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
         marginBottom: 18,
         width: "100%",
         paddingLeft: isUser ? 48 : 0,
-        paddingRight: isUser ? 0 : 48,
+        paddingRight: isUser ? 0 : 24,
       }}
     >
       {/* 头像 */}
@@ -50,7 +50,9 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
       <div
         className={`chat-bubble ${isUser ? "is-user" : "is-assistant"}`}
         style={{
-          maxWidth: isUser ? "min(72%, 420px)" : "min(78%, 620px)",
+          maxWidth: isUser
+            ? "min(72%, 420px, calc(100% - 94px))"
+            : "min(78%, 620px, calc(100% - 94px))",
           minWidth: 0,
           background: isUser ? GREEN_DARK : "#f5f5f0",
           color: isUser ? "#fff" : "#2d2d2d",

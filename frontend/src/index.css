@@ -254,7 +254,7 @@ body {
   }
 
   .chat-bubble {
-    max-width: calc(100% - 46px) !important;
+    max-width: calc(100% - 54px) !important;
     font-size: 13px !important;
     line-height: 1.65 !important;
   }
