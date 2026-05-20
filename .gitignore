@@ -19,3 +19,6 @@ backend/chroma_db/
 # Frontend build/test output
 frontend/build/
 frontend/coverage/
+backend/autolens.db
+backend/chroma_db/
+backend/venv/
