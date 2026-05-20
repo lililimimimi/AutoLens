@@ -83,7 +83,7 @@ async def run_chat_pipeline(
         - 通勤距离大概多远？
         - 是否有家充条件？
 
-        或者您可以前往智能推荐页面填写表单，获得更精准的推荐结果。"""
+        也可以前往智能推荐页填写表单，推荐会更精准。"""
             answer = await reflect_and_get_content(answer)
             save_message(session_id, "assistant", answer, customer_id)
             return {

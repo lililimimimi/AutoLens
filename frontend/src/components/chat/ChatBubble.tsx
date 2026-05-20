@@ -53,6 +53,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           maxWidth: isUser
             ? "min(72%, 420px, calc(100% - 94px))"
             : "min(78%, 620px, calc(100% - 94px))",
+          width: isUser ? "fit-content" : "min(78%, 620px, calc(100% - 94px))",
           minWidth: 0,
           background: isUser ? GREEN_DARK : "#f5f5f0",
           color: isUser ? "#fff" : "#2d2d2d",
@@ -62,10 +63,21 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           lineHeight: isUser ? 1.45 : 1.75,
           boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
           overflowWrap: "anywhere",
+          wordBreak: "break-word",
+          whiteSpace: "pre-wrap",
         }}
       >
         {isUser ? (
-          <div style={{ fontWeight: 600 }}>{message.content}</div>
+          <div
+            style={{
+              fontWeight: 600,
+              overflowWrap: "anywhere",
+              wordBreak: "break-word",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            {message.content}
+          </div>
         ) : (
           <ReactMarkdown
             components={{
@@ -94,7 +106,15 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                 </h3>
               ),
               p: ({ children }) => (
-                <p style={{ margin: "0 0 10px", fontSize: 14 }}>
+                <p
+                  style={{
+                    margin: "0 0 10px",
+                    fontSize: 14,
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
                   {children}
                 </p>
               ),
@@ -109,7 +129,14 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
                 </ul>
               ),
               li: ({ children }) => (
-                <li style={{ margin: "4px 0", fontSize: 14 }}>
+                <li
+                  style={{
+                    margin: "4px 0",
+                    fontSize: 14,
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                  }}
+                >
                   {children}
                 </li>
               ),
