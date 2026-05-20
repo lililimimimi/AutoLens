@@ -230,6 +230,7 @@ export default function CustomerService() {
               borderRadius: 12,
               padding: "20px 24px",
               flex: 1,
+              minHeight: 300
             }}
           >
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>
