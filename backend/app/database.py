@@ -8,6 +8,33 @@ from app.config import settings
 
 # 数据库文件路径
 DB_PATH = Path(settings.DATABASE_URL.replace("sqlite:///", ""))
+VEHICLE_JSON_FIELDS = ("suitable_scenarios", "highlights", "weaknesses")
+VEHICLE_COLUMNS = {
+    "brand",
+    "model",
+    "vehicle_type",
+    "energy_type",
+    "body_type",
+    "price_min",
+    "price_max",
+    "range_km",
+    "battery_kwh",
+    "fast_charge_minutes",
+    "seats",
+    "drive_type",
+    "autopilot_level",
+    "smart_cockpit",
+    "wheelbase",
+    "cargo_liters",
+    "safety_score",
+    "monthly_sales",
+    "suitable_scenarios",
+    "highlights",
+    "weaknesses",
+    "image_url",
+    "created_at",
+    "updated_at",
+}
 
 
 def get_connection() -> sqlite3.Connection:
@@ -118,6 +145,14 @@ def row_to_dict(row: sqlite3.Row) -> dict:
     return dict(row)
 
 
+def _prepare_vehicle_data(data: dict) -> dict:
+    prepared = {k: v for k, v in data.items() if k in VEHICLE_COLUMNS}
+    for field in VEHICLE_JSON_FIELDS:
+        if field in prepared and not isinstance(prepared[field], str):
+            prepared[field] = json.dumps(prepared[field] or [], ensure_ascii=False)
+    return prepared
+
+
 # ─────────────────────────────────────────
 # 车型 CRUD
 # ─────────────────────────────────────────
@@ -125,7 +160,7 @@ def row_to_dict(row: sqlite3.Row) -> dict:
 def create_vehicle(data: dict) -> dict:
     conn = get_connection()
     now = now_str()
-    data["highlights"] = json.dumps(data.get("highlights", []), ensure_ascii=False)
+    data = _prepare_vehicle_data(data)
     data["created_at"] = now
     data["updated_at"] = now
 
@@ -158,8 +193,9 @@ def get_all_vehicles() -> list[dict]:
 def update_vehicle(vehicle_id: int, data: dict) -> Optional[dict]:
     if not data:
         return get_vehicle(vehicle_id)
-    if "highlights" in data:
-        data["highlights"] = json.dumps(data["highlights"], ensure_ascii=False)
+    data = _prepare_vehicle_data(data)
+    if not data:
+        return get_vehicle(vehicle_id)
     data["updated_at"] = now_str()
     set_clause = ", ".join([f"{k} = ?" for k in data.keys()])
     conn = get_connection()
@@ -182,8 +218,12 @@ def delete_vehicle(vehicle_id: int) -> bool:
 
 def _parse_vehicle(d: dict) -> dict:
     """解析车型的 JSON 字段"""
-    if "highlights" in d and isinstance(d["highlights"], str):
-        d["highlights"] = json.loads(d["highlights"])
+    for field in VEHICLE_JSON_FIELDS:
+        if field in d and isinstance(d[field], str):
+            try:
+                d[field] = json.loads(d[field])
+            except json.JSONDecodeError:
+                d[field] = []
     return d
 
 

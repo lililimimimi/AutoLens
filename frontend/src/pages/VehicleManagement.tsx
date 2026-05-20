@@ -69,8 +69,10 @@ export default function VehicleManagement() {
         setVehicles((prev) => [...prev, created]);
       }
       setModalOpen(false);
-    } catch (e: any) {
-      alert(e.response?.data?.detail || "保存失败，请检查必填项是否填写完整");
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "保存失败，请检查必填项是否填写完整";
+      alert(message);
     }
   };
 

@@ -9,8 +9,16 @@ interface ChatBubbleProps {
   message: ChatMessage;
 }
 
+function normalizeMarkdown(content: string) {
+  return content
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export default function ChatBubble({ message }: ChatBubbleProps) {
   const isUser = message.role === "user";
+  const content = isUser ? message.content : normalizeMarkdown(message.content);
 
   return (
     <div
@@ -64,7 +72,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
           overflowWrap: "anywhere",
           wordBreak: "break-word",
-          whiteSpace: "pre-wrap",
+          whiteSpace: isUser ? "pre-wrap" : "normal",
         }}
       >
         {isUser ? (
@@ -76,7 +84,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               whiteSpace: "pre-wrap",
             }}
           >
-            {message.content}
+            {content}
           </div>
         ) : (
           <ReactMarkdown
@@ -108,11 +116,11 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               p: ({ children }) => (
                 <p
                   style={{
-                    margin: "0 0 10px",
+                    margin: "0 0 8px",
                     fontSize: 14,
                     overflowWrap: "anywhere",
                     wordBreak: "break-word",
-                    whiteSpace: "pre-wrap",
+                    whiteSpace: "normal",
                   }}
                 >
                   {children}
@@ -156,7 +164,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
               ),
             }}
           >
-            {message.content}
+            {content}
           </ReactMarkdown>
         )}
 

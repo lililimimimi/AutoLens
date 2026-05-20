@@ -12,9 +12,14 @@ import NotesTimeline from "./NotesTimeline";
 interface Props {
   customer: any;
   onStageChange?: (id: number, stage: string) => void;
+  onCustomerUpdate?: (customer: any) => void;
 }
 
-export default function CustomerDetail({ customer, onStageChange }: Props) {
+export default function CustomerDetail({
+  customer,
+  onStageChange,
+  onCustomerUpdate,
+}: Props) {
   const [notes, setNotes] = useState(customer.notes || "");
   const [stage, setStage] = useState<CustomerStage>(customer.stage);
   const [editingNotes, setEditingNotes] = useState(false);
@@ -25,7 +30,7 @@ export default function CustomerDetail({ customer, onStageChange }: Props) {
     setNotes(customer.notes || "");
     setStage(customer.stage);
     setEditingNotes(false);
-  }, [customer.id]);
+  }, [customer.id, customer.notes, customer.stage]);
 
   const handleStageChange = async (s: CustomerStage) => {
     setStage(s);
@@ -38,15 +43,16 @@ export default function CustomerDetail({ customer, onStageChange }: Props) {
   };
 
   const handleEdit = async (data: any) => {
-    await updateCustomer(customer.id, data);
+    const updated = await updateCustomer(customer.id, data);
+    onCustomerUpdate?.(updated);
     setEditModalOpen(false);
-    window.location.reload();
   };
 
   const handleSaveNotes = async () => {
     setSavingNotes(true);
     try {
-      await updateCustomerNotes(customer.id, notes);
+      const updated = await updateCustomerNotes(customer.id, notes);
+      onCustomerUpdate?.(updated);
       setEditingNotes(false);
     } catch (e) {
       console.error("保存备注失败", e);

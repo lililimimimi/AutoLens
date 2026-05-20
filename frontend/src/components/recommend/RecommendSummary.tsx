@@ -22,6 +22,15 @@ export default function RecommendSummary({
   sceneReason,
   createdAt,
 }: RecommendSummaryProps) {
+  const evidenceTags = [
+    "车型库",
+    ...Array.from(new Set(
+      evidence
+        .map((item) => item.source)
+        .filter((source) => source && source !== "车型库"),
+    )),
+  ];
+
   if (!reportMd) {
     return (
       <div
@@ -279,7 +288,7 @@ export default function RecommendSummary({
             </span>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {["车型库", "RAG知识库", "DeepSearch"].map((tag) => (
+            {evidenceTags.map((tag) => (
               <span
                 key={tag}
                 style={{

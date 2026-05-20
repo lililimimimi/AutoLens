@@ -3,7 +3,6 @@ import { useState } from "react";
 import { X, Search } from "lucide-react";
 
 const GREEN_DARK = "#3d5a3d";
-const GREEN = "#5a7a5a";
 const PAGE_SIZE = 5;
 
 const BODY_TYPES = ["全部", "轿车", "SUV", "MPV", "跑车", "皮卡", "其他"];

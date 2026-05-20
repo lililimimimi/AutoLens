@@ -66,7 +66,7 @@ export default function VehicleFilter({
         <span
           style={{
             fontSize: 14,
-            color: "#3d5a3d",
+            color: GREEN,
             fontWeight: 600,
             whiteSpace: "nowrap",
             marginRight: 4,
@@ -88,17 +88,18 @@ export default function VehicleFilter({
             outline: "none",
           }}
         >
-          <option value="全部">全部</option>
-          <option value="纯电">纯电</option>
-          <option value="插混">插混</option>
-          <option value="增程">增程</option>
+          {energyOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
         </select>
       </div>
       <div className="vehicle-filter-group" style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span
           style={{
             fontSize: 14,
-            color: "#3d5a3d",
+            color: GREEN,
             fontWeight: 600,
             whiteSpace: "nowrap",
             marginRight: 4,
@@ -120,11 +121,11 @@ export default function VehicleFilter({
             outline: "none",
           }}
         >
-          <option value="全部">全部</option>
-          <option value="SUV">SUV</option>
-          <option value="轿车">轿车</option>
-          <option value="MPV">MPV</option>
-          <option value="跑车">跑车</option>
+          {bodyOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
         </select>
       </div>
       {/* 新增按钮 */}

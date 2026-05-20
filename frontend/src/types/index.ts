@@ -59,6 +59,7 @@ export interface Vehicle {
   charge_time_ac?: number;
   charge_time_dc?: number;
   highlights: string[];
+  weaknesses?: string[];
   image_url?: string;
   created_at: string;
   updated_at: string;
@@ -77,7 +78,13 @@ export interface VehicleCreate {
   cargo_liters?: number;
   charge_time_ac?: number;
   charge_time_dc?: number;
+  fast_charge_minutes?: number;
+  monthly_sales?: number;
+  wheelbase?: number;
+  smart_cockpit?: string;
+  safety_score?: number;
   highlights?: string[];
+  weaknesses?: string[];
   image_url?: string;
 }
 
@@ -108,6 +115,7 @@ export interface RecommendRequest {
   profile: UserProfile;
   top_n?: number;
   enable_deep_search?: boolean;
+  customer_id?: number;
 }
 
 export interface VehicleScore {

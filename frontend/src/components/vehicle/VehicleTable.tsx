@@ -136,6 +136,8 @@ export default function VehicleTable({
               <td style={{ padding: "14px" }}>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
+                    aria-label={`编辑 ${v.brand} ${v.model}`}
+                    title="编辑车型"
                     onClick={() => onEdit(v)}
                     style={{
                       width: 32,
@@ -152,6 +154,8 @@ export default function VehicleTable({
                     <Pencil size={14} color={GREEN} />
                   </button>
                   <button
+                    aria-label={`删除 ${v.brand} ${v.model}`}
+                    title="删除车型"
                     onClick={() => onDelete(v.id)}
                     style={{
                       width: 32,

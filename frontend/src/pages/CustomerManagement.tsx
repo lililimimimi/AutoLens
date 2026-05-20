@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
-import { getCustomers, updateCustomerNotes } from "../api/client";
+import { getCustomers } from "../api/client";
 import { useEffect } from "react";
 import CustomerList from "../components/customer/CustomerList";
 import CustomerDetail from "../components/customer/CustomerDetail";
@@ -36,6 +36,13 @@ export default function CustomerManagement() {
       prev.map((c) => (c.id === id ? { ...c, stage } : c)),
     );
     setSelected((prev: any) => (prev?.id === id ? { ...prev, stage } : prev));
+  };
+
+  const handleCustomerUpdate = (updated: any) => {
+    setCustomers((prev) =>
+      prev.map((c) => (c.id === updated.id ? updated : c)),
+    );
+    setSelected(updated);
   };
 
   return (
@@ -73,6 +80,7 @@ export default function CustomerManagement() {
             key={selected.id}
             customer={selected}
             onStageChange={handleStageChange}
+            onCustomerUpdate={handleCustomerUpdate}
           />
         ) : (
           <div

@@ -198,11 +198,11 @@ export default function CustomerService() {
                     background: "#f5f5f0",
                     borderRadius: "12px 12px 12px 12px",
                     padding: "14px 18px",
-                    fontSize: 18,
+                    fontSize: 14,
                     color: "#999",
                   }}
                 >
-                  正在思考中...
+                  正在识别需求、检索知识库并生成回复，请稍候...
                 </div>
               </div>
             )}

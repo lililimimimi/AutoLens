@@ -79,7 +79,7 @@ AutoLens/
 cd backend
 python -m venv .venv
 source .venv/bin/activate
-pip install fastapi uvicorn pydantic pydantic-settings openai tavily-python chromadb sentence-transformers
+pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8003
 ```
 
@@ -115,7 +115,7 @@ source .venv/bin/activate
 安装依赖：
 
 ```bash
-pip install fastapi uvicorn pydantic pydantic-settings openai tavily-python chromadb sentence-transformers
+pip install -r requirements.txt
 ```
 
 创建 `backend/.env`：

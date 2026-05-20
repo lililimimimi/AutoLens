@@ -91,7 +91,7 @@ source .venv/bin/activate
 安装依赖：
 
 ```bash
-pip install fastapi uvicorn pydantic pydantic-settings openai tavily-python chromadb sentence-transformers
+pip install -r requirements.txt
 ```
 
 ## 启动服务

@@ -8,7 +8,7 @@ import CompareTable from "../components/compare/CompareTable";
 import CompareSummary from "../components/compare/CompareSummary";
 import CompareBuyingAdvice from "../components/compare/CompareBuyingAdvice";
 import CompareCharts from "../components/compare/CompareCharts";
-import { compare, getVehicles } from "../api/client";
+import { compare, compareReport, getVehicles } from "../api/client";
 
 export default function Compare() {
   const [selected, setSelected] = useState<any[]>([]);
@@ -26,7 +26,13 @@ export default function Compare() {
   }, []);
 
   const handleAdd = (v: CompareVehicle) => {
-    if (selected.length < 3) setSelected((prev) => [...prev, v]);
+    if (selected.length < 3) {
+      setSelected((prev) => [...prev, v]);
+      setCompared(false);
+      setReportData(null);
+      setAnalyses([]);
+      setBuyingAdvice([]);
+    }
   };
 
   const handleRemove = (id: number) => {
@@ -55,16 +61,10 @@ export default function Compare() {
   const handleGenerateReport = async () => {
     setReportLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:8003"}/api/compare/report`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ vehicle_ids: selected.map((v) => v.id) }),
-        },
-      );
-      const data = await res.json();
-      setReportData(data);
+      const res = await compareReport({
+        vehicle_ids: selected.map((v) => v.id),
+      });
+      setReportData(res);
       setActiveTab("完整报告");
     } catch (e) {
       console.error("报告生成失败", e);
@@ -124,7 +124,7 @@ export default function Compare() {
         </>
       )}
 
-      {!compared && !loading && (
+      {!compared && !loading && selected.length < 2 && (
         <div
           style={{
             background: "#fff",
@@ -136,6 +136,21 @@ export default function Compare() {
           }}
         >
           请选择至少 2 辆车型，点击「生成对比」
+        </div>
+      )}
+
+      {!compared && !loading && selected.length >= 2 && (
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: 12,
+            padding: "48px 0",
+            textAlign: "center",
+            color: "#8a8f89",
+            fontSize: 15,
+          }}
+        >
+          已选择 {selected.length} 辆车型，点击「生成对比」开始分析。
         </div>
       )}
 

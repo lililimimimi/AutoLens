@@ -34,6 +34,7 @@ export default function Recommend() {
   const [sceneReason, setSceneReason] = useState("");
   const [createdAt, setCreatedAt] = useState("");
   const [aiSummary, setAiSummary] = useState<string | string[]>("");
+  const hasStarted = loading || results.length > 0 || Boolean(reportMd);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -117,7 +118,7 @@ export default function Recommend() {
       </div>
 
       {/* 下半部分：推荐结果 + 推荐报告 */}
-      {(results.length > 0 || loading) && (
+      {hasStarted && (
         <div
           className="recommend-results-grid"
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}
@@ -147,7 +148,7 @@ export default function Recommend() {
                   marginLeft: 4,
                 }}
               >
-                共 {results.length} 辆
+                {loading ? "生成中" : `共 ${results.length} 辆`}
               </span>
             </div>
 
@@ -160,13 +161,14 @@ export default function Recommend() {
                   padding: "40px 0",
                 }}
               >
-                Agent 链路运行中，请稍候...
+                正在筛选车型并生成推荐报告，请稍候...
               </div>
             )}
 
-            {results.map((r, i) => (
-              <ResultCard key={i} result={r} rank={i} defaultOpen={i === 0} />
-            ))}
+            {!loading &&
+              results.map((r, i) => (
+                <ResultCard key={i} result={r} rank={i} defaultOpen={i === 0} />
+              ))}
           </div>
 
           {/* 右：推荐报告 */}
@@ -182,7 +184,7 @@ export default function Recommend() {
       )}
 
       {/* 未开始提示 */}
-      {!loading && results.length === 0 && !reportMd && (
+      {!hasStarted && (
         <div
           style={{
             background: "#fff",

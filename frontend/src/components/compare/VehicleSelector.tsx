@@ -46,10 +46,13 @@ export default function VehicleSelector({
   onCompare,
 }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
+  const canCompareAfterAdd = selected.length + 1 >= 2;
 
   const handleAdd = (v: any) => {
     onAdd(v);
-    if (selected.length + 1 >= MAX) setModalOpen(false);
+    if (canCompareAfterAdd || selected.length + 1 >= MAX) {
+      setModalOpen(false);
+    }
   };
 
   return (

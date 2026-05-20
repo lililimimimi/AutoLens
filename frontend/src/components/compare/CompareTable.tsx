@@ -1,6 +1,4 @@
 // AutoLens — components/compare/CompareTable.tsx
-import type { CompareVehicle } from "./VehicleSelector";
-
 const GREEN = "#5a7a5a";
 const GREEN_DARK = "#3d5a3d";
 

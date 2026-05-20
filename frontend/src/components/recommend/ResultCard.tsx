@@ -322,7 +322,7 @@ export function ResultCard({
                 证据来源
               </div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {["车型库", "RAG知识库", "DeepSearch"].map((tag) => (
+                {["车型库", "RAG知识库"].map((tag) => (
                   <span
                     key={tag}
                     style={{

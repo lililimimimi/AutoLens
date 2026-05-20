@@ -36,7 +36,6 @@ export default function ChatInput({
       }}
     >
       {/* 输入框 */}
-      {/* 输入框 */}
       <div
         style={{
           display: "flex",
@@ -109,7 +108,7 @@ export default function ChatInput({
             transition: "all 0.2s",
           }}
         >
-          <span>🌐</span>
+          <Globe size={13} />
           <span>联网搜索</span>
           <ChevronDown size={12} />
         </button>

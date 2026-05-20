@@ -2,8 +2,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from typing import Optional
-from pydantic import BaseModel
 
 from app.config import settings
 from app.database import (
@@ -18,9 +16,10 @@ from app.database import (
     get_dashboard_stats,
 )
 from app.schemas import (
-    VehicleCreate, VehicleUpdate, Vehicle,
-    CustomerCreate, CustomerUpdate, Customer, CustomerListItem, NotesUpdate,
-    DashboardStats, SuccessResponse, ErrorResponse,
+    VehicleCreate, VehicleUpdate,
+    CustomerCreate, CustomerUpdate, NotesUpdate,
+    RecommendRequest, ChatRequest, CompareRequest,
+    SuccessResponse,
 )
 
 
@@ -45,7 +44,7 @@ app = FastAPI(
 # 允许前端跨域访问
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -155,18 +154,12 @@ def dashboard():
 # 推荐 / 客服
 # ─────────────────────────────────────────
 
-class RecommendRequestBody(BaseModel):
-    profile: dict
-    top_n: int = 3
-    enable_deep_search: bool = False
-    customer_id: Optional[int] = None
-
 @app.post("/api/recommend", tags=["推荐"])
-async def recommend(body: RecommendRequestBody):
+async def recommend(body: RecommendRequest):
     from app.agents.recommend.orchestrator import run_recommend_pipeline
     try:
         result = await run_recommend_pipeline(
-            profile=body.profile,
+            profile=body.profile.model_dump(exclude_none=True),
             top_n=body.top_n,
             enable_deep_search=body.enable_deep_search,
             customer_id=body.customer_id,
@@ -176,14 +169,8 @@ async def recommend(body: RecommendRequestBody):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-class ChatRequestBody(BaseModel):
-    message: str
-    session_id: Optional[str] = None
-    customer_id: Optional[int] = None
-    enable_web_search: bool = True
-
 @app.post("/api/chat", tags=["客服"])
-async def chat(body: ChatRequestBody):
+async def chat(body: ChatRequest):
     from app.agents.customer_service.orchestrator import run_chat_pipeline
     try:
         result = await run_chat_pipeline(
@@ -198,19 +185,12 @@ async def chat(body: ChatRequestBody):
 
 
 @app.post("/api/compare", tags=["对比"])
-async def compare_vehicles(body: dict):
-    vehicle_ids = body.get("vehicle_ids", [])
-    if len(vehicle_ids) < 2:
-        raise HTTPException(status_code=400, detail="至少需要2辆车型")
-    
+async def compare_vehicles(body: CompareRequest):
     from app.agents.compare.orchestrator import run_compare_pipeline
-    return await run_compare_pipeline(vehicle_ids)
+    return await run_compare_pipeline(body.vehicle_ids)
 
 
 @app.post("/api/compare/report", tags=["对比"])
-async def compare_report(body: dict):
-    vehicle_ids = body.get("vehicle_ids", [])
-    if len(vehicle_ids) < 2:
-        raise HTTPException(status_code=400, detail="至少需要2辆车型")
+async def compare_report(body: CompareRequest):
     from app.agents.compare.orchestrator import run_report_pipeline
-    return await run_report_pipeline(vehicle_ids)
+    return await run_report_pipeline(body.vehicle_ids)

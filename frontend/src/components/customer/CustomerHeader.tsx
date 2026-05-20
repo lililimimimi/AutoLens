@@ -3,7 +3,6 @@ import StageTag from "./StageTag";
 import type { CustomerStage } from "../../types";
 
 const GREEN = "#5a7a5a";
-const GREEN_DARK = "#3d5a3d";
 
 interface Props {
   customer: any;

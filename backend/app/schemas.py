@@ -136,6 +136,8 @@ class VehicleUpdate(BaseModel):
     charge_time_dc:  Optional[float]       = None
     monthly_sales:   Optional[int]         = None
     highlights:      Optional[List[str]]   = None
+    weaknesses:      Optional[List[str]]   = None
+    safety_score:    Optional[float]       = None
     image_url:       Optional[str]         = None
 
 
@@ -180,6 +182,7 @@ class RecommendRequest(BaseModel):
     profile:     UserProfile
     top_n:       int  = Field(3, ge=1, le=5, description="返回推荐数量")
     enable_deep_search: bool = Field(False, description="是否启用联网搜索")
+    customer_id: Optional[int] = Field(None, description="关联客户ID")
 
 
 class VehicleScore(BaseModel):

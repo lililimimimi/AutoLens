@@ -23,17 +23,36 @@ import type {
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:8003",
-  timeout: 120000, 
+  timeout: 120000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+function getApiErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.detail;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => item?.msg)
+        .filter(Boolean)
+        .join("；");
+    }
+    if (typeof error.response?.data?.message === "string") {
+      return error.response.data.message;
+    }
+    return error.message || "请求失败";
+  }
+
+  return error instanceof Error ? error.message : "请求失败";
+}
+
 // 统一错误处理
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    const message = err.response?.data?.message || err.message || "请求失败";
+    const message = getApiErrorMessage(err);
     console.error("[AutoLens API Error]", message);
     return Promise.reject(new Error(message));
   },
@@ -136,6 +155,11 @@ export const compare = async (
   data: CompareRequest,
 ): Promise<CompareResponse> => {
   const res = await api.post("/api/compare", data);
+  return res.data;
+};
+
+export const compareReport = async (data: CompareRequest): Promise<any> => {
+  const res = await api.post("/api/compare/report", data);
   return res.data;
 };
 
